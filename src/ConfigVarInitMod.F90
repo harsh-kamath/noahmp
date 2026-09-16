@@ -28,6 +28,10 @@ contains
     noahmp%config%nmlist%OptSoilWaterTranspiration   = undefined_int
     noahmp%config%nmlist%OptGroundResistanceEvap     = undefined_int
     noahmp%config%nmlist%OptSurfaceDrag              = undefined_int
+#ifdef CCPP
+    noahmp%config%nmlist%OptSurfaceStabilityFunction = 0
+    noahmp%config%nmlist%OptSurfaceThermalRoughness  = 0
+#endif
     noahmp%config%nmlist%OptStomataResistance        = undefined_int
     noahmp%config%nmlist%OptSnowAlbedo               = undefined_int
     noahmp%config%nmlist%OptSnowCoverGround          = undefined_int
@@ -75,6 +79,9 @@ contains
     noahmp%config%domain%NumSoilLayer                = undefined_int
     noahmp%config%domain%GridIndexI                  = undefined_int
     noahmp%config%domain%GridIndexJ                  = undefined_int
+#ifdef CCPP
+    noahmp%config%domain%TimeStepIndex               = 1
+#endif
     noahmp%config%domain%VegType                     = undefined_int
     noahmp%config%domain%CropType                    = undefined_int
     noahmp%config%domain%SurfaceType                 = undefined_int
@@ -98,6 +105,9 @@ contains
     noahmp%config%domain%ThicknessAtmosBotLayer      = undefined_real
     noahmp%config%domain%Latitude                    = undefined_real
     noahmp%config%domain%DepthSoilTempBottom         = undefined_real
+#ifdef CCPP
+    noahmp%config%domain%FlagUseLocalPotTemp         = .true.
+#endif
     noahmp%config%domain%NumTempSnwAgeSnicar         = undefined_int
     noahmp%config%domain%NumTempGradSnwAgeSnicar     = undefined_int
     noahmp%config%domain%NumDensitySnwAgeSnicar      = undefined_int
