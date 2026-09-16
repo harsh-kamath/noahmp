@@ -1,0 +1,1662 @@
+[ccpp-table-properties]
+  name = noahmp
+  type = scheme
+  dependencies = NoahmpIOVarType.F90
+  dependencies = NoahmpIOVarInitMod.F90
+  dependencies = NoahmpReadTableMod.F90
+  dependencies = ../../src/ForcingVarType.F90
+  dependencies = ../../src/ConfigVarType.F90
+  dependencies = ../../src/EnergyVarType.F90
+  dependencies = ../../src/WaterVarType.F90
+  dependencies = ../../src/BiochemVarType.F90
+  dependencies = ../../src/NoahmpVarType.F90
+  dependencies = ../../src/ConfigVarInitMod.F90
+  dependencies = ../../src/ForcingVarInitMod.F90
+  dependencies = ../../src/EnergyVarInitMod.F90
+  dependencies = ../../src/WaterVarInitMod.F90
+  dependencies = ../../src/BiochemVarInitMod.F90
+  dependencies = ConfigVarInTransferMod.F90
+  dependencies = ForcingVarInTransferMod.F90
+  dependencies = EnergyVarInTransferMod.F90
+  dependencies = WaterVarInTransferMod.F90
+  dependencies = BiochemVarInTransferMod.F90
+  dependencies = ConfigVarOutTransferMod.F90
+  dependencies = ForcingVarOutTransferMod.F90
+  dependencies = EnergyVarOutTransferMod.F90
+  dependencies = WaterVarOutTransferMod.F90
+  dependencies = BiochemVarOutTransferMod.F90
+  dependencies = ../../src/ConstantDefineMod.F90
+  dependencies = ../../src/AtmosForcingMod.F90
+  dependencies = ../../src/GeneralInitMod.F90
+  dependencies = ../../src/PhenologyMainMod.F90
+  dependencies = ../../src/IrrigationTriggerMod.F90
+  dependencies = ../../src/IrrigationPrepareMod.F90
+  dependencies = ../../utility/CheckNanMod.F90
+  dependencies = ../../src/SoilHydraulicPropertyMod.F90
+  dependencies = ../../src/IrrigationInfilPhilipMod.F90
+  dependencies = ../../src/IrrigationSprinklerMod.F90
+  dependencies = ../../src/CanopyWaterInterceptMod.F90
+  dependencies = ../../src/PrecipitationHeatAdvectMod.F90
+  dependencies = ../../src/SnowCoverGroundNiu07Mod.F90
+  dependencies = ../../src/SnowCoverGroundAR25Mod.F90
+  dependencies = ../../src/GroundRoughnessPropertyMod.F90
+  dependencies = ../../src/SnowThermalPropertyMod.F90
+  dependencies = ../../src/SoilThermalPropertyMod.F90
+  dependencies = ../../src/GroundThermalPropertyMod.F90
+  dependencies = ../../src/SnowAgingBatsMod.F90
+  dependencies = ../../src/SnowAlbedoBatsMod.F90
+  dependencies = ../../src/SnowAlbedoClassMod.F90
+  dependencies = ../../utility/PiecewiseLinearInterp1dMod.F90
+  dependencies = ../../src/SnowRadiationSnicarMod.F90
+  dependencies = ../../src/SnowAlbedoSnicarMod.F90
+  dependencies = ../../src/GroundAlbedoMod.F90
+  dependencies = ../../src/CanopyRadiationTwoStreamMod.F90
+  dependencies = ../../src/SnowFreshRadiusMod.F90
+  dependencies = ../../src/SnowAgingSnicarMod.F90
+  dependencies = ../../src/SurfaceAlbedoMod.F90
+  dependencies = ../../src/SurfaceRadiationMod.F90
+  dependencies = ../../src/SurfaceEmissivityMod.F90
+  dependencies = ../../src/SoilWaterTranspirationMod.F90
+  dependencies = ../../src/ResistanceGroundEvaporationMod.F90
+  dependencies = ../../src/PsychrometricVariableMod.F90
+  dependencies = ../../src/VaporPressureSaturationMod.F90
+  dependencies = ../../src/ResistanceAboveCanopyMostMod.F90
+  dependencies = ../../src/ResistanceAboveCanopyChen97Mod.F90
+  dependencies = ../../src/ResistanceLeafToGroundMod.F90
+  dependencies = ../../src/ResistanceCanopyStomataBallBerryMod.F90
+  dependencies = ../../src/HumiditySaturationMod.F90
+  dependencies = ../../src/ResistanceCanopyStomataJarvisMod.F90
+  dependencies = surface_phys/SurfaceExchangeGFSMod.F90
+  dependencies = surface_phys/RoughnessLengthsMod.F90
+  dependencies = surface_phys/StablityFunctionsMod.F90
+  dependencies = surface_phys/SurfaceExchangeMYNNMod.F90
+  dependencies = ../../src/SurfaceEnergyFluxVegetatedMod.F90
+  dependencies = ../../src/ResistanceBareGroundMostMod.F90
+  dependencies = ../../src/ResistanceBareGroundChen97Mod.F90
+  dependencies = ../../src/SurfaceEnergyFluxBareGroundMod.F90
+  dependencies = ../../src/MatrixSolverTriDiagonalMod.F90
+  dependencies = ../../src/SoilSnowTemperatureSolverMod.F90
+  dependencies = ../../src/SoilSnowThermalDiffusionMod.F90
+  dependencies = ../../src/SoilSnowTemperatureMainMod.F90
+  dependencies = ../../src/SoilWaterSupercoolKoren99Mod.F90
+  dependencies = ../../src/SoilWaterSupercoolNiu06Mod.F90
+  dependencies = ../../src/SoilSnowWaterPhaseChangeMod.F90
+  dependencies = ../../src/EnergyMainMod.F90
+  dependencies = ../../src/CanopyHydrologyMod.F90
+  dependencies = ../../src/SnowfallBelowCanopyMod.F90
+  dependencies = ../../src/SnowpackCompactionMod.F90
+  dependencies = ../../src/SnowpackCompactionAR24Mod.F90
+  dependencies = ../../src/SnowLayerWaterComboMod.F90
+  dependencies = ../../src/SnowLayerCombineMod.F90
+  dependencies = ../../src/SnowLayerDivideMod.F90
+  dependencies = ../../src/SnowpackHydrologyMod.F90
+  dependencies = ../../src/SnowAerosolSnicarMod.F90
+  dependencies = ../../src/SnowWaterMainMod.F90
+  dependencies = ../../src/IrrigationFloodMod.F90
+  dependencies = ../../src/IrrigationMicroMod.F90
+  dependencies = ../../src/RunoffSurfaceTopModelGrdMod.F90
+  dependencies = ../../src/RunoffSurfaceTopModelEquiMod.F90
+  dependencies = ../../src/RunoffSurfaceFreeDrainMod.F90
+  dependencies = ../../src/RunoffSurfaceBatsMod.F90
+  dependencies = ../../src/RunoffSurfaceTopModelMmfMod.F90
+  dependencies = ../../src/RunoffSurfaceVicMod.F90
+  dependencies = ../../src/RunoffSurfaceXinAnJiangMod.F90
+  dependencies = ../../src/SoilWaterInfilPhilipMod.F90
+  dependencies = ../../src/SoilWaterInfilGreenAmptMod.F90
+  dependencies = ../../src/SoilWaterInfilSmithParlangeMod.F90
+  dependencies = ../../src/RunoffSurfaceExcessDynamicVicMod.F90
+  dependencies = ../../src/RunoffSurfaceDynamicVicMod.F90
+  dependencies = ../../src/RunoffSurfaceWetlandMod.F90
+  dependencies = ../../src/WaterTableEquilibriumMod.F90
+  dependencies = ../../src/RunoffSubSurfaceEquiWaterTableMod.F90
+  dependencies = ../../src/GroundWaterTopModelMod.F90
+  dependencies = ../../src/RunoffSubSurfaceGroundWaterMod.F90
+  dependencies = ../../src/RunoffSubSurfaceDrainageMod.F90
+  dependencies = ../../src/ShallowWaterTableMmfMod.F90
+  dependencies = ../../src/RunoffSubSurfaceShallowMmfMod.F90
+  dependencies = ../../src/SoilWaterDiffusionRichardsMod.F90
+  dependencies = ../../src/SoilMoistureSolverMod.F90
+  dependencies = ../../src/TileDrainageSimpleMod.F90
+  dependencies = ../../src/TileDrainageEquiDepthMod.F90
+  dependencies = ../../src/WaterTableDepthSearchMod.F90
+  dependencies = ../../src/TileDrainageHooghoudtMod.F90
+  dependencies = ../../src/SoilWaterMainMod.F90
+  dependencies = ../../src/WetlandWaterZhang22Mod.F90
+  dependencies = ../../src/WaterMainMod.F90
+  dependencies = ../../src/CarbonFluxNatureVegMod.F90
+  dependencies = ../../src/BiochemNatureVegMainMod.F90
+  dependencies = ../../src/CarbonFluxCropMod.F90
+  dependencies = ../../src/CropGrowDegreeDayMod.F90
+  dependencies = ../../src/CropPhotosynthesisMod.F90
+  dependencies = ../../src/BiochemCropMainMod.F90
+  dependencies = ../../src/BalanceErrorCheckMod.F90
+  dependencies = ../../src/NoahmpMainMod.F90
+  dependencies = ../../src/GeneralInitGlacierMod.F90
+  dependencies = ../../src/PrecipitationHeatAdvectGlacierMod.F90
+  dependencies = ../../src/SnowCoverGlacierMod.F90
+  dependencies = ../../src/GroundRoughnessPropertyGlacierMod.F90
+  dependencies = ../../src/GlacierIceThermalPropertyMod.F90
+  dependencies = ../../src/GroundThermalPropertyGlacierMod.F90
+  dependencies = ../../src/GroundAlbedoGlacierMod.F90
+  dependencies = ../../src/SurfaceAlbedoGlacierMod.F90
+  dependencies = ../../src/SurfaceRadiationGlacierMod.F90
+  dependencies = ../../src/SurfaceEmissivityGlacierMod.F90
+  dependencies = ../../src/ResistanceGroundEvaporationGlacierMod.F90
+  dependencies = ../../src/PsychrometricVariableGlacierMod.F90
+  dependencies = ../../src/SurfaceEnergyFluxGlacierMod.F90
+  dependencies = ../../src/GlacierTemperatureSolverMod.F90
+  dependencies = ../../src/GlacierThermalDiffusionMod.F90
+  dependencies = ../../src/GlacierTemperatureMainMod.F90
+  dependencies = ../../src/GlacierPhaseChangeMod.F90
+  dependencies = ../../src/EnergyMainGlacierMod.F90
+  dependencies = ../../src/SnowpackHydrologyGlacierMod.F90
+  dependencies = ../../src/SnowWaterMainGlacierMod.F90
+  dependencies = ../../src/WaterMainGlacierMod.F90
+  dependencies = ../../src/BalanceErrorCheckGlacierMod.F90
+  dependencies = ../../src/NoahmpMainGlacierMod.F90
+  dependencies = NoahmpColumnPhysicsMod.F90
+  dependencies = NoahmpDriverMainMod.F90
+  dependencies = ../../src/SnowInputSnicarMod.F90
+
+# Base modular Noah-MP interface. WRF_HYDRO is intentionally disabled.
+# Scheme and host metadata must use identical standard names and units.
+########################################################################
+[ccpp-arg-table]
+  name = noahmp_init
+  type = scheme
+[horizontal_dimension]
+  standard_name = horizontal_dimension
+  long_name = horizontal dimension
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+[vertical_dimension_of_soil]
+  standard_name = vertical_dimension_of_soil
+  long_name = vertical dimension of soil
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+[vertical_dimension_of_surface_snow]
+  standard_name = vertical_dimension_of_surface_snow
+  long_name = vertical dimension of surface snow
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+[dynamic_vegetation_option]
+  standard_name = control_for_land_surface_scheme_dynamic_vegetation
+  long_name = dynamic vegetation option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[rain_snow_partition_option]
+  standard_name = control_for_land_surface_scheme_precipitation_type_partition
+  long_name = rain snow partition option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[soil_water_transpiration_option]
+  standard_name = control_for_land_surface_scheme_soil_moisture_factor_stomatal_resistance
+  long_name = soil water transpiration option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[ground_resistance_evaporation_option]
+  standard_name = control_for_land_surface_scheme_ground_evaporation_resistance
+  long_name = ground resistance evaporation option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[surface_drag_option]
+  standard_name = control_for_land_surface_scheme_surface_layer_drag_coefficient
+  long_name = surface drag option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[surface_stability_function_option]
+  standard_name = control_for_surface_layer_scheme_stability_function
+  long_name = surface stability function option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[surface_thermal_roughness_option]
+  standard_name = control_for_thermal_roughness_lengths_over_land
+  long_name = surface thermal roughness option
+  units = 1
+  dimensions = ()
+  type = integer
+  intent = in
+[stomata_resistance_option]
+  standard_name = control_for_land_surface_scheme_canopy_stomatal_resistance
+  long_name = stomata resistance option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[snow_albedo_option]
+  standard_name = control_for_land_surface_scheme_surface_snow_albedo
+  long_name = snow albedo option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[canopy_radiation_transfer_option]
+  standard_name = control_for_land_surface_scheme_radiative_transfer
+  long_name = canopy radiation transfer option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[snow_soil_temperature_time_option]
+  standard_name = control_for_land_surface_scheme_soil_and_snow_temperature_time_integration
+  long_name = snow soil temperature time option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[snow_thermal_conductivity_option]
+  standard_name = control_for_land_surface_scheme_snow_thermal_conductivity
+  long_name = snow thermal conductivity option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[soil_temperature_bottom_option]
+  standard_name = control_for_land_surface_scheme_lower_boundary_soil_temperature
+  long_name = soil temperature bottom option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[soil_supercooled_water_option]
+  standard_name = control_for_land_surface_scheme_supercooled_liquid_water
+  long_name = soil supercooled water option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[frozen_soil_permeability_option]
+  standard_name = control_for_land_surface_scheme_frozen_soil_permeability
+  long_name = frozen soil permeability option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[dynamic_vic_infiltration_option]
+  standard_name = control_for_land_surface_scheme_dynamic_vic_infiltration
+  long_name = dynamic vic infiltration option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[tile_drainage_option]
+  standard_name = control_for_land_surface_scheme_tile_drainage
+  long_name = tile drainage option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[irrigation_option]
+  standard_name = control_for_land_surface_scheme_irrigation
+  long_name = irrigation option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[irrigation_method_option]
+  standard_name = control_for_land_surface_scheme_irrigation_method
+  long_name = irrigation method option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[crop_model_option]
+  standard_name = control_for_land_surface_scheme_crop_model
+  long_name = crop model option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[soil_property_option]
+  standard_name = control_for_land_surface_scheme_soil_parameter_treatment
+  long_name = soil property option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[pedotransfer_option]
+  standard_name = control_for_land_surface_scheme_pedotransfer_function
+  long_name = pedotransfer option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[surface_runoff_option]
+  standard_name = control_for_land_surface_scheme_surface_runoff
+  long_name = surface runoff option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[subsurface_runoff_option]
+  standard_name = control_for_land_surface_scheme_subsurface_runoff
+  long_name = subsurface runoff option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[glacier_treatment_option]
+  standard_name = control_for_land_surface_scheme_glacier_treatment
+  long_name = glacier treatment option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[snow_compaction_option]
+  standard_name = control_for_land_surface_scheme_snow_compaction
+  long_name = snow compaction option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[wetland_model_option]
+  standard_name = control_for_land_surface_scheme_wetland
+  long_name = wetland model option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[snow_cover_fraction_option]
+  standard_name = control_for_land_surface_scheme_snow_cover_fraction
+  long_name = snow cover fraction option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[snicar_snow_shape_option]
+  standard_name = control_for_land_surface_scheme_snicar_snow_shape
+  long_name = snicar snow shape option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[snicar_rt_solver_option]
+  standard_name = control_for_land_surface_scheme_snicar_radiative_transfer_solver
+  long_name = snicar rt solver option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[snicar_band_number_option]
+  standard_name = control_for_land_surface_scheme_snicar_spectral_bands
+  long_name = snicar band number option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[snicar_solar_spectrum_option]
+  standard_name = control_for_land_surface_scheme_snicar_solar_spectrum
+  long_name = snicar solar spectrum option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[snicar_snow_optics_option]
+  standard_name = control_for_land_surface_scheme_snicar_snow_optics
+  long_name = snicar snow optics option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[snicar_dust_optics_option]
+  standard_name = control_for_land_surface_scheme_snicar_dust_optics
+  long_name = snicar dust optics option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[snicar_snow_bc_internal_mixing]
+  standard_name = flag_for_snicar_internal_mixing_of_black_carbon_in_snow
+  long_name = snicar snow bc internal mixing
+  units = flag
+  dimensions = ()
+  type = logical
+  intent = in
+[snicar_snow_dust_internal_mixing]
+  standard_name = flag_for_snicar_internal_mixing_of_dust_in_snow
+  long_name = snicar snow dust internal mixing
+  units = flag
+  dimensions = ()
+  type = logical
+  intent = in
+[snicar_use_aerosol]
+  standard_name = flag_for_snicar_aerosol_effects
+  long_name = snicar use aerosol
+  units = flag
+  dimensions = ()
+  type = logical
+  intent = in
+[snicar_use_organic_carbon]
+  standard_name = flag_for_snicar_organic_carbon
+  long_name = snicar use organic carbon
+  units = flag
+  dimensions = ()
+  type = logical
+  intent = in
+[snicar_read_aerosol_table]
+  standard_name = flag_for_snicar_aerosol_deposition_from_table
+  long_name = snicar read aerosol table
+  units = flag
+  dimensions = ()
+  type = logical
+  intent = in
+[urban_physics_option]
+  standard_name = control_for_urban_physics
+  long_name = urban physics option
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[errmsg]
+  standard_name = ccpp_error_message
+  long_name = error message for error handling in CCPP
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=*
+  intent = out
+[errflg]
+  standard_name = ccpp_error_code
+  long_name = error code for error handling in CCPP
+  units = 1
+  dimensions = ()
+  type = integer
+  intent = out
+########################################################################
+[ccpp-arg-table]
+  name = noahmp_run
+  type = scheme
+[horizontal_loop_extent]
+  standard_name = horizontal_loop_extent
+  long_name = horizontal loop extent
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+[timestep_index]
+  standard_name = index_of_timestep
+  long_name = timestep index
+  units = index
+  dimensions = ()
+  type = integer
+  intent = in
+[timestep_for_physics]
+  standard_name = timestep_for_physics
+  long_name = timestep for physics
+  units = s
+  dimensions = ()
+  type = real
+  kind = kind_phys
+  intent = in
+[forecast_julian_day]
+  standard_name = forecast_julian_day
+  long_name = forecast julian day
+  units = days
+  dimensions = ()
+  type = real
+  kind = kind_phys
+  intent = in
+[number_of_days_in_current_year]
+  standard_name = number_of_days_in_current_year
+  long_name = number of days in current year
+  units = days
+  dimensions = ()
+  type = integer
+  intent = in
+[characteristic_grid_lengthscale]
+  standard_name = characteristic_grid_lengthscale
+  long_name = characteristic grid lengthscale
+  units = m
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[vertical_dimension_of_soil]
+  standard_name = vertical_dimension_of_soil
+  long_name = vertical dimension of soil
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+[vertical_dimension_of_surface_snow]
+  standard_name = vertical_dimension_of_surface_snow
+  long_name = vertical dimension of surface snow
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+[lower_bound_of_vertical_dimension_of_surface_snow]
+  standard_name = lower_bound_of_vertical_dimension_of_surface_snow
+  long_name = lower bound of vertical dimension of surface snow
+  units = count
+  dimensions = ()
+  type = integer
+  intent = in
+[depth_of_soil_layer_interfaces]
+  standard_name = depth_of_soil_layers
+  long_name = depth of soil layer interfaces
+  units = m
+  dimensions = (vertical_dimension_of_soil_internal_to_land_surface_scheme)
+  type = real
+  kind = kind_phys
+  intent = in
+[vegetation_category]
+  standard_name = vegetation_type_classification
+  long_name = vegetation category
+  units = index
+  dimensions = (horizontal_loop_extent)
+  type = integer
+  intent = in
+[soil_category]
+  standard_name = soil_type_classification
+  long_name = soil category
+  units = index
+  dimensions = (horizontal_loop_extent)
+  type = integer
+  intent = in
+[soil_color_classification]
+  standard_name = soil_color_classification
+  long_name = soil color classification
+  units = index
+  dimensions = (horizontal_loop_extent)
+  type = integer
+  intent = in
+[surface_slope_classification]
+  standard_name = surface_slope_classification
+  long_name = surface slope classification
+  units = index
+  dimensions = (horizontal_loop_extent)
+  type = integer
+  intent = in
+[active_snow_layer_lower_index]
+  standard_name = number_of_snow_layers
+  long_name = active snow layer lower index
+  units = count
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[depth_of_snow_soil_layer_interfaces]
+  standard_name = depth_from_snow_surface_at_bottom_interface
+  long_name = depth of snow soil layer interfaces
+  units = m
+  dimensions = (horizontal_loop_extent,lower_bound_of_vertical_dimension_of_surface_snow:vertical_dimension_of_soil_internal_to_land_surface_scheme)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[atmospheric_forcing_height]
+  standard_name = height_above_ground_at_lowest_model_layer
+  long_name = atmospheric forcing height
+  units = m
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[atmosphere_boundary_layer_thickness]
+  standard_name = atmosphere_boundary_layer_thickness
+  long_name = atmosphere boundary layer thickness
+  units = m
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[flag_for_reference_pressure_theta]
+  standard_name = flag_for_reference_pressure_theta
+  long_name = flag for reference pressure theta
+  units = flag
+  dimensions = ()
+  type = logical
+  intent = in
+[leaf_area_index]
+  standard_name = leaf_area_index
+  long_name = leaf area index
+  units = none
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[stem_area_index]
+  standard_name = stem_area_index
+  long_name = stem area index
+  units = none
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[specific_humidity_at_surface]
+  standard_name = surface_specific_humidity_over_land
+  long_name = specific humidity at surface
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[ground_temperature]
+  standard_name = ground_temperature
+  long_name = ground temperature
+  units = K
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[canopy_temperature]
+  standard_name = canopy_temperature
+  long_name = canopy temperature
+  units = K
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[dimensionless_snow_age]
+  standard_name = dimensionless_age_of_surface_snow
+  long_name = dimensionless snow age
+  units = none
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[snow_albedo_on_previous_timestep]
+  standard_name = surface_albedo_assuming_deep_snow_on_previous_timestep
+  long_name = snow albedo on previous timestep
+  units = frac
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[canopy_air_vapor_pressure]
+  standard_name = air_vapor_pressure_in_canopy
+  long_name = canopy air vapor pressure
+  units = Pa
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[canopy_air_temperature]
+  standard_name = air_temperature_in_canopy
+  long_name = canopy air temperature
+  units = K
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[surface_exchange_coefficient_for_heat]
+  standard_name = surface_drag_coefficient_for_heat_and_moisture_for_noahmp
+  long_name = surface exchange coefficient for heat
+  units = none
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[surface_exchange_coefficient_for_momentum]
+  standard_name = surface_drag_coefficient_for_momentum_for_noahmp
+  long_name = surface exchange coefficient for momentum
+  units = none
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[maximum_vegetation_fraction]
+  standard_name = max_vegetation_area_fraction
+  long_name = maximum vegetation fraction
+  units = frac
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[vegetation_fraction]
+  standard_name = vegetation_area_fraction
+  long_name = vegetation fraction
+  units = frac
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[soil_temperature]
+  standard_name = soil_temperature
+  long_name = soil temperature
+  units = K
+  dimensions = (horizontal_loop_extent,vertical_dimension_of_soil)
+  type = real
+  kind = kind_phys
+  intent = inout
+[snow_temperature]
+  standard_name = temperature_in_surface_snow
+  long_name = snow temperature
+  units = K
+  dimensions = (horizontal_loop_extent,lower_bound_of_vertical_dimension_of_surface_snow:0)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[canopy_liquid_water]
+  standard_name = canopy_intercepted_liquid_water
+  long_name = canopy liquid water
+  units = mm
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[canopy_ice_water]
+  standard_name = canopy_intercepted_ice_mass
+  long_name = canopy ice water
+  units = mm
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[canopy_wet_fraction]
+  standard_name = wet_canopy_area_fraction
+  long_name = canopy wet fraction
+  units = none
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[snow_water_equivalent]
+  standard_name = water_equivalent_accumulated_snow_depth_over_land
+  long_name = snow water equivalent
+  units = mm
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[snow_water_equivalent_on_previous_timestep]
+  standard_name = lwe_thickness_of_snowfall_amount_on_previous_timestep
+  long_name = snow water equivalent on previous timestep
+  units = mm
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[snow_depth]
+  standard_name = surface_snow_thickness_water_equivalent_over_land
+  long_name = snow depth
+  units = mm
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[flood_irrigation_fraction]
+  standard_name = flood_irrigation_fraction
+  long_name = flood irrigation fraction
+  units = 1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+  optional = True
+[flood_irrigation_water_amount]
+  standard_name = flood_irrigation_water_amount
+  long_name = flood irrigation water amount
+  units = m
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[micro_irrigation_fraction]
+  standard_name = micro_irrigation_fraction
+  long_name = micro irrigation fraction
+  units = 1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+  optional = True
+[micro_irrigation_water_amount]
+  standard_name = micro_irrigation_water_amount
+  long_name = micro irrigation water amount
+  units = m
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[sprinkler_irrigation_fraction]
+  standard_name = sprinkler_irrigation_fraction
+  long_name = sprinkler irrigation fraction
+  units = 1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+  optional = True
+[sprinkler_irrigation_water_amount]
+  standard_name = sprinkler_irrigation_water_amount
+  long_name = sprinkler irrigation water amount
+  units = m
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[water_table_depth]
+  standard_name = water_table_depth
+  long_name = water table depth
+  units = m
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[soil_moisture_below_soil_column]
+  standard_name = volumetric_soil_moisture_between_soil_bottom_and_water_table
+  long_name = soil moisture below soil column
+  units = m3 m-3
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[tile_drainage_fraction]
+  standard_name = tile_drainage_fraction
+  long_name = tile drainage fraction
+  units = 1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+  optional = True
+[aquifer_water_storage]
+  standard_name = water_storage_in_aquifer
+  long_name = aquifer water storage
+  units = mm
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[soil_aquifer_water_storage]
+  standard_name = water_storage_in_aquifer_and_saturated_soil
+  long_name = soil aquifer water storage
+  units = mm
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[lake_water_storage]
+  standard_name = water_storage_in_lake
+  long_name = lake water storage
+  units = mm
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[grid_irrigation_fraction]
+  standard_name = grid_irrigation_fraction
+  long_name = grid irrigation fraction
+  units = 1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+  optional = True
+[sprinkler_irrigation_event_count]
+  standard_name = sprinkler_irrigation_event_count
+  long_name = sprinkler irrigation event count
+  units = count
+  dimensions = (horizontal_loop_extent)
+  type = integer
+  intent = inout
+  optional = True
+[micro_irrigation_event_count]
+  standard_name = micro_irrigation_event_count
+  long_name = micro irrigation event count
+  units = count
+  dimensions = (horizontal_loop_extent)
+  type = integer
+  intent = inout
+  optional = True
+[flood_irrigation_event_count]
+  standard_name = flood_irrigation_event_count
+  long_name = flood irrigation event count
+  units = count
+  dimensions = (horizontal_loop_extent)
+  type = integer
+  intent = inout
+  optional = True
+[soil_saturated_fraction]
+  standard_name = soil_saturated_fraction
+  long_name = soil saturated fraction
+  units = 1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[wetland_water_storage]
+  standard_name = wetland_water_storage
+  long_name = wetland water storage
+  units = mm
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[snow_layer_ice]
+  standard_name = lwe_thickness_of_ice_in_surface_snow
+  long_name = snow layer ice
+  units = mm
+  dimensions = (horizontal_loop_extent,lower_bound_of_vertical_dimension_of_surface_snow:0)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[snow_layer_liquid_water]
+  standard_name = lwe_thickness_of_liquid_water_in_surface_snow
+  long_name = snow layer liquid water
+  units = mm
+  dimensions = (horizontal_loop_extent,lower_bound_of_vertical_dimension_of_surface_snow:0)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[soil_liquid_water]
+  standard_name = volume_fraction_of_unfrozen_water_in_soil
+  long_name = soil liquid water
+  units = frac
+  dimensions = (horizontal_loop_extent,vertical_dimension_of_soil)
+  type = real
+  kind = kind_phys
+  intent = inout
+[soil_moisture]
+  standard_name = volume_fraction_of_condensed_water_in_soil
+  long_name = soil moisture
+  units = frac
+  dimensions = (horizontal_loop_extent,vertical_dimension_of_soil)
+  type = real
+  kind = kind_phys
+  intent = inout
+[equilibrium_soil_moisture]
+  standard_name = volumetric_equilibrium_soil_moisture
+  long_name = equilibrium soil moisture
+  units = m3 m-3
+  dimensions = (horizontal_loop_extent,vertical_dimension_of_soil_internal_to_land_surface_scheme)
+  type = real
+  kind = kind_phys
+  intent = in
+  optional = True
+[leaf_mass]
+  standard_name = leaf_mass_content
+  long_name = leaf mass
+  units = g m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[root_mass]
+  standard_name = fine_root_mass_content
+  long_name = root mass
+  units = g m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[stem_mass]
+  standard_name = stem_mass_content
+  long_name = stem mass
+  units = g m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[wood_mass]
+  standard_name = wood_mass_content
+  long_name = wood mass
+  units = g m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[deep_soil_carbon_mass]
+  standard_name = slow_soil_pool_mass_content_of_carbon
+  long_name = deep soil carbon mass
+  units = g m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[shallow_soil_carbon_mass]
+  standard_name = fast_soil_pool_mass_content_of_carbon
+  long_name = shallow soil carbon mass
+  units = g m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[wilting_soil_moisture]
+  standard_name = volume_fraction_of_condensed_water_in_soil_at_wilting_point
+  long_name = wilting soil moisture
+  units = frac
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[reference_soil_moisture]
+  standard_name = threshold_volume_fraction_of_condensed_water_in_soil
+  long_name = reference soil moisture
+  units = frac
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[surface_radiative_temperature]
+  standard_name = surface_skin_temperature_over_land
+  long_name = surface radiative temperature
+  units = K
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[surface_emissivity]
+  standard_name = surface_longwave_emissivity_over_land
+  long_name = surface emissivity
+  units = frac
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[surface_roughness_length]
+  standard_name = surface_roughness_length_over_land
+  long_name = surface roughness length
+  units = cm
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[temperature_at_2m_from_noahmp]
+  standard_name = temperature_at_2m_from_noahmp
+  long_name = temperature at 2m from noahmp
+  units = K
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[specific_humidity_at_2m_from_noahmp]
+  standard_name = specific_humidity_at_2m_from_noahmp
+  long_name = specific humidity at 2m from noahmp
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[surface_drag_wind_speed_for_momentum]
+  standard_name = surface_drag_wind_speed_for_momentum_in_air_over_land
+  long_name = surface drag wind speed for momentum
+  units = m s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[surface_drag_mass_flux_for_heat_and_moisture]
+  standard_name = surface_drag_mass_flux_for_heat_and_moisture_in_air_over_land
+  long_name = surface drag mass flux for heat and moisture
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[surface_albedo]
+  standard_name = surface_albedo_for_diffused_shortwave_on_radiation_timestep
+  long_name = surface albedo
+  units = frac
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[canopy_resistance]
+  standard_name = aerodynamic_resistance_in_canopy
+  long_name = canopy resistance
+  units = s m-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[latent_heat_flux]
+  standard_name = kinematic_surface_upward_latent_heat_flux_over_land
+  long_name = latent heat flux
+  units = kg kg-1 m s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[sensible_heat_flux]
+  standard_name = kinematic_surface_upward_sensible_heat_flux_over_land
+  long_name = sensible heat flux
+  units = K m s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[ground_heat_flux]
+  standard_name = upward_heat_flux_in_soil_over_land
+  long_name = ground heat flux
+  units = W m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[soil_upward_latent_heat_flux]
+  standard_name = soil_upward_latent_heat_flux
+  long_name = soil upward latent heat flux
+  units = W m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[transpiration_latent_heat_flux]
+  standard_name = transpiration_flux
+  long_name = transpiration latent heat flux
+  units = W m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[canopy_upward_latent_heat_flux]
+  standard_name = canopy_upward_latent_heat_flux
+  long_name = canopy upward latent heat flux
+  units = W m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[precipitation_advected_heat_flux]
+  standard_name = total_precipitation_advected_heat
+  long_name = precipitation advected heat flux
+  units = W m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[soil_moisture_content]
+  standard_name = soil_moisture_content
+  long_name = soil moisture content
+  units = kg m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[normalized_soil_wetness]
+  standard_name = normalized_soil_wetness
+  long_name = normalized soil wetness
+  units = frac
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[snow_cover_fraction]
+  standard_name = surface_snow_area_fraction_over_land
+  long_name = snow cover fraction
+  units = frac
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[total_canopy_water]
+  standard_name = canopy_water_amount
+  long_name = total canopy water
+  units = kg m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[ground_snowfall_rate]
+  standard_name = lwe_snowfall_rate
+  long_name = ground snowfall rate
+  units = mm s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+  optional = True
+[surface_runoff]
+  standard_name = surface_runoff
+  long_name = surface runoff
+  units = kg m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[surface_runoff_flux]
+  standard_name = surface_runoff_flux
+  long_name = surface runoff flux
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[subsurface_runoff]
+  standard_name = subsurface_runoff_flux
+  long_name = subsurface runoff
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[net_canopy_evaporation]
+  standard_name = evaporation_of_intercepted_water
+  long_name = net canopy evaporation
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[net_ground_evaporation]
+  standard_name = soil_surface_evaporation_rate
+  long_name = net ground evaporation
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[transpiration]
+  standard_name = transpiration_rate
+  long_name = transpiration
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[snow_deposition_sublimation_upward_latent_heat_flux]
+  standard_name = snow_deposition_sublimation_upward_latent_heat_flux
+  long_name = snow deposition sublimation upward latent heat flux
+  units = W m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[snow_freezing_rain_upward_latent_heat_flux]
+  standard_name = snow_freezing_rain_upward_latent_heat_flux
+  long_name = snow freezing rain upward latent heat flux
+  units = W m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[direct_visible_surface_albedo]
+  standard_name = surface_albedo_direct_visible_over_land
+  long_name = direct visible surface albedo
+  units = frac
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[direct_nir_surface_albedo]
+  standard_name = surface_albedo_direct_NIR_over_land
+  long_name = direct nir surface albedo
+  units = frac
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[diffuse_visible_surface_albedo]
+  standard_name = surface_albedo_diffuse_visible_over_land
+  long_name = diffuse visible surface albedo
+  units = frac
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[diffuse_nir_surface_albedo]
+  standard_name = surface_albedo_diffuse_NIR_over_land
+  long_name = diffuse nir surface albedo
+  units = frac
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = inout
+[latitude]
+  standard_name = latitude
+  long_name = latitude
+  units = radian
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[instantaneous_cosine_of_zenith_angle]
+  standard_name = instantaneous_cosine_of_zenith_angle
+  long_name = instantaneous cosine of zenith angle
+  units = none
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[surface_downwelling_shortwave_flux]
+  standard_name = surface_downwelling_shortwave_flux
+  long_name = surface downwelling shortwave flux
+  units = W m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[surface_downwelling_longwave_flux]
+  standard_name = surface_downwelling_longwave_flux
+  long_name = surface downwelling longwave flux
+  units = W m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[direct_nir_shortwave_flux_at_surface]
+  standard_name = surface_downwelling_direct_nir_shortwave_flux_on_radiation_timestep
+  long_name = direct nir shortwave flux at surface
+  units = W m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[diffuse_nir_shortwave_flux_at_surface]
+  standard_name = surface_downwelling_diffuse_nir_shortwave_flux_on_radiation_timestep
+  long_name = diffuse nir shortwave flux at surface
+  units = W m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[direct_vis_shortwave_flux_at_surface]
+  standard_name = surface_downwelling_direct_uv_and_vis_shortwave_flux_on_radiation_timestep
+  long_name = direct vis shortwave flux at surface
+  units = W m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[diffuse_vis_shortwave_flux_at_surface]
+  standard_name = surface_downwelling_diffuse_uv_and_vis_shortwave_flux_on_radiation_timestep
+  long_name = diffuse vis shortwave flux at surface
+  units = W m-2
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[snicar_hydrophobic_black_carbon_deposition_flux]
+  standard_name = snicar_hydrophobic_black_carbon_deposition_flux
+  long_name = snicar hydrophobic black carbon deposition flux
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[snicar_hydrophilic_black_carbon_deposition_flux]
+  standard_name = snicar_hydrophilic_black_carbon_deposition_flux
+  long_name = snicar hydrophilic black carbon deposition flux
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[snicar_hydrophobic_organic_carbon_deposition_flux]
+  standard_name = snicar_hydrophobic_organic_carbon_deposition_flux
+  long_name = snicar hydrophobic organic carbon deposition flux
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[snicar_hydrophilic_organic_carbon_deposition_flux]
+  standard_name = snicar_hydrophilic_organic_carbon_deposition_flux
+  long_name = snicar hydrophilic organic carbon deposition flux
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[snicar_dust_species_1_deposition_flux]
+  standard_name = snicar_dust_species_1_deposition_flux
+  long_name = snicar dust species 1 deposition flux
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[snicar_dust_species_2_deposition_flux]
+  standard_name = snicar_dust_species_2_deposition_flux
+  long_name = snicar dust species 2 deposition flux
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[snicar_dust_species_3_deposition_flux]
+  standard_name = snicar_dust_species_3_deposition_flux
+  long_name = snicar dust species 3 deposition flux
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[snicar_dust_species_4_deposition_flux]
+  standard_name = snicar_dust_species_4_deposition_flux
+  long_name = snicar dust species 4 deposition flux
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[snicar_dust_species_5_deposition_flux]
+  standard_name = snicar_dust_species_5_deposition_flux
+  long_name = snicar dust species 5 deposition flux
+  units = kg m-2 s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[surface_air_pressure]
+  standard_name = surface_air_pressure
+  long_name = surface air pressure
+  units = Pa
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[air_pressure_at_surface_adjacent_layer]
+  standard_name = air_pressure_at_surface_adjacent_layer
+  long_name = air pressure at surface adjacent layer
+  units = Pa
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[deep_soil_temperature]
+  standard_name = deep_soil_temperature
+  long_name = deep soil temperature
+  units = K
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[air_temperature_at_lowest_model_layer]
+  standard_name = air_temperature_at_surface_adjacent_layer
+  long_name = air temperature at lowest model layer
+  units = K
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[specific_humidity_at_lowest_model_layer]
+  standard_name = specific_humidity_at_surface_adjacent_layer
+  long_name = specific humidity at lowest model layer
+  units = kg kg-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[eastward_wind_at_lowest_model_layer]
+  standard_name = x_wind_at_surface_adjacent_layer
+  long_name = eastward wind at lowest model layer
+  units = m s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[northward_wind_at_lowest_model_layer]
+  standard_name = y_wind_at_surface_adjacent_layer
+  long_name = northward wind at lowest model layer
+  units = m s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[convective_precipitation_rate_on_previous_timestep]
+  standard_name = convective_precipitation_rate_on_previous_timestep
+  long_name = convective precipitation rate on previous timestep
+  units = mm s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+  optional = True
+[explicit_precipitation_rate_on_previous_timestep]
+  standard_name = explicit_precipitation_rate_on_previous_timestep
+  long_name = explicit precipitation rate on previous timestep
+  units = mm s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+  optional = True
+[precipitation_amount_on_dynamics_timestep]
+  standard_name = nonnegative_lwe_thickness_of_precipitation_amount_on_dynamics_timestep
+  long_name = precipitation amount on dynamics timestep
+  units = m
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[snowfall_rate_on_previous_timestep]
+  standard_name = snowfall_rate_on_previous_timestep
+  long_name = snowfall rate on previous timestep
+  units = mm s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+  optional = True
+[graupel_precipitation_rate_on_previous_timestep]
+  standard_name = graupel_precipitation_rate_on_previous_timestep
+  long_name = graupel precipitation rate on previous timestep
+  units = mm s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+  optional = True
+[ice_precipitation_rate_on_previous_timestep]
+  standard_name = ice_precipitation_rate_on_previous_timestep
+  long_name = ice precipitation rate on previous timestep
+  units = mm s-1
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+  optional = True
+[precipitation_type]
+  standard_name = precipitation_type
+  long_name = precipitation type
+  units = flag
+  dimensions = (horizontal_loop_extent)
+  type = real
+  kind = kind_phys
+  intent = in
+[flag_for_iteration]
+  standard_name = flag_for_iteration
+  long_name = flag for iteration
+  units = flag
+  dimensions = (horizontal_loop_extent)
+  type = logical
+  intent = in
+[flag_nonzero_land_surface_fraction]
+  standard_name = flag_nonzero_land_surface_fraction
+  long_name = flag nonzero land surface fraction
+  units = flag
+  dimensions = (horizontal_loop_extent)
+  type = logical
+  intent = in
+[apply_urban_irrigation]
+  standard_name = apply_urban_irrigation
+  long_name = apply urban irrigation
+  units = flag
+  dimensions = (horizontal_loop_extent)
+  type = logical
+  intent = in
+  optional = True
+[errmsg]
+  standard_name = ccpp_error_message
+  long_name = error message for error handling in CCPP
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=*
+  intent = out
+[errflg]
+  standard_name = ccpp_error_code
+  long_name = error code for error handling in CCPP
+  units = 1
+  dimensions = ()
+  type = integer
+  intent = out
+########################################################################
+[ccpp-arg-table]
+  name = noahmp_finalize
+  type = scheme
+[errmsg]
+  standard_name = ccpp_error_message
+  long_name = error message for error handling in CCPP
+  units = none
+  dimensions = ()
+  type = character
+  kind = len=*
+  intent = out
+[errflg]
+  standard_name = ccpp_error_code
+  long_name = error code for error handling in CCPP
+  units = 1
+  dimensions = ()
+  type = integer
+  intent = out
