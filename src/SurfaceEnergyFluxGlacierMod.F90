@@ -10,6 +10,10 @@ module SurfaceEnergyFluxGlacierMod
   use ConstantDefineMod
   use VaporPressureSaturationMod,    only : VaporPressureSaturation
   use ResistanceBareGroundMostMod,   only : ResistanceBareGroundMOST
+#ifdef CCPP
+  use SurfaceExchangeGFSMod,  only : UpdateNoahmpSurfaceExchangeGFS
+  use SurfaceExchangeMYNNMod, only : UpdateNoahmpSurfaceExchangeMYNN
+#endif
 
   implicit none
 
@@ -59,6 +63,9 @@ contains
               ThicknessSnowSoilLayer  => noahmp%config%domain%ThicknessSnowSoilLayer ,& ! in,    thickness of snow/soil layers [m]
               OptSnowSoilTempTime     => noahmp%config%nmlist%OptSnowSoilTempTime    ,& ! in,    options for snow/soil temperature time scheme (only layer 1)
               OptGlacierTreatment     => noahmp%config%nmlist%OptGlacierTreatment    ,& ! in,    options for glacier treatment 
+#ifdef CCPP
+              OptSurfaceDrag          => noahmp%config%nmlist%OptSurfaceDrag         ,& ! in,    surface-layer exchange option
+#endif
               RadLwDownRefHeight      => noahmp%forcing%RadLwDownRefHeight           ,& ! in,    downward longwave radiation [W/m2] at reference height
               WindEastwardRefHeight   => noahmp%forcing%WindEastwardRefHeight        ,& ! in,    wind speed [m/s] in eastward direction at reference height
               WindNorthwardRefHeight  => noahmp%forcing%WindNorthwardRefHeight       ,& ! in,    wind speed [m/s] in northward direction at reference height
@@ -126,7 +133,17 @@ contains
        RoughLenShBareGrd = RoughLenMomGrd
 
        ! aerodyn resistances between heights reference height and d+z0v
+#ifdef CCPP
+       if ( OptSurfaceDrag == 1 .or. OptSurfaceDrag == 2 ) &
+          call ResistanceBareGroundMOST(noahmp, IndIter, HeatSensibleTmp, MoStabParaSgn)
+       if ( OptSurfaceDrag == 3 ) &
+          call UpdateNoahmpSurfaceExchangeGFS(noahmp, TemperatureGrdBare, .false.)
+       if ( OptSurfaceDrag == 4 ) &
+          call UpdateNoahmpSurfaceExchangeMYNN(noahmp, TemperatureGrdBare, &
+               HeatSensibleTmp, MoistureFluxSfc, .false.)
+#else
        call ResistanceBareGroundMOST(noahmp, IndIter, HeatSensibleTmp, MoStabParaSgn)
+#endif
 
        ! conductance variables for diagnostics         
        ExchCoeffMomTmp = 1.0 / ResistanceMomBareGrd
@@ -206,8 +223,15 @@ contains
     WindStressNsBare = -DensityAirRefHeight * ExchCoeffMomBare * WindSpdRefHeight * WindNorthwardRefHeight
 
     ! 2m air temperature
+#ifdef CCPP
+    if ( OptSurfaceDrag == 1 .or. OptSurfaceDrag == 2 ) then
+       ExchCoeffSh2mBare = FrictionVelBare * ConstVonKarman / &
+                           (log((2.0+RoughLenShBareGrd)/RoughLenShBareGrd) - MoStabCorrShBare2m)
+    endif
+#else
     ExchCoeffSh2mBare = FrictionVelBare * ConstVonKarman / &
                         (log((2.0+RoughLenShBareGrd)/RoughLenShBareGrd) - MoStabCorrShBare2m)
+#endif
     if ( ExchCoeffSh2mBare < 1.0e-5 ) then
        TemperatureAir2mBare = TemperatureGrdBare
        SpecHumidity2mBare   = SpecHumiditySfc
