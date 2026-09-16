@@ -24,6 +24,9 @@ module ForcingVarType
     real(kind=kind_noahmp) :: RadLwDownRefHeight       ! downward longwave radiation [W/m2] at reference height
     real(kind=kind_noahmp) :: PressureAirRefHeight     ! air pressure [Pa] at reference height
     real(kind=kind_noahmp) :: PressureAirSurface       ! air pressure [Pa] at surface-atmosphere interface (lowest atmos model boundary)
+#ifdef CCPP
+    real(kind=kind_noahmp) :: BoundaryLayerHeight      ! planetary boundary layer height [m]
+#endif
     real(kind=kind_noahmp) :: PrecipConvRefHeight      ! convective precipitation rate [mm/s] at reference height
     real(kind=kind_noahmp) :: PrecipNonConvRefHeight   ! non-convective precipitation rate [mm/s] at reference height
     real(kind=kind_noahmp) :: PrecipShConvRefHeight    ! shallow convective precipitation rate [mm/s] at reference height
