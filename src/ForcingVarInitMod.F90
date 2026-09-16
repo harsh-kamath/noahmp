@@ -35,6 +35,9 @@ contains
     noahmp%forcing%PrecipGraupelRefHeight   = undefined_real
     noahmp%forcing%PrecipHailRefHeight      = undefined_real
     noahmp%forcing%PressureAirSurface       = undefined_real
+#ifdef CCPP
+    noahmp%forcing%BoundaryLayerHeight      = undefined_real
+#endif
     noahmp%forcing%PressureAirRefHeight     = undefined_real
     noahmp%forcing%TemperatureSoilBottom    = undefined_real
 
