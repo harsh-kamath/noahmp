@@ -11,6 +11,10 @@ module SurfaceEnergyFluxBareGroundMod
   use VaporPressureSaturationMod,    only : VaporPressureSaturation
   use ResistanceBareGroundMostMod,   only : ResistanceBareGroundMOST
   use ResistanceBareGroundChen97Mod, only : ResistanceBareGroundChen97
+#ifdef CCPP
+  use SurfaceExchangeGFSMod,  only : UpdateNoahmpSurfaceExchangeGFS
+  use SurfaceExchangeMYNNMod, only : UpdateNoahmpSurfaceExchangeMYNN
+#endif
 
   implicit none
 
@@ -130,6 +134,13 @@ contains
        ! aerodyn resistances between reference heigths and d+z0v
        if ( OptSurfaceDrag == 1 ) call ResistanceBareGroundMOST(noahmp, IndIter, HeatSensibleTmp, MoStabParaSgn)
        if ( OptSurfaceDrag == 2 ) call ResistanceBareGroundChen97(noahmp, IndIter)
+#ifdef CCPP
+       if ( OptSurfaceDrag == 3 ) &
+          call UpdateNoahmpSurfaceExchangeGFS(noahmp, TemperatureGrdBare, .false.)
+       if ( OptSurfaceDrag == 4 ) &
+          call UpdateNoahmpSurfaceExchangeMYNN(noahmp, TemperatureGrdBare, &
+               HeatSensibleTmp, MoistureFluxSfc, .false.)
+#endif
 
        ! conductance variables for diagnostics         
        ExchCoeffMomTmp = 1.0 / ResistanceMomBareGrd
@@ -205,6 +216,10 @@ contains
       !ExchCoeffSh2mBare = FrictionVelBare * ConstVonKarman / log((2.0+RoughLenShBareGrd)/RoughLenShBareGrd)
        ExchCoeffSh2mBare = FrictionVelBare * ConstVonKarman / &
                            (log((2.0+RoughLenShBareGrd)/RoughLenShBareGrd) - MoStabCorrShBare2m)
+#ifdef CCPP
+    endif
+    if ( (OptSurfaceDrag >= 1) .and. (OptSurfaceDrag <= 4) ) then
+#endif
        if ( ExchCoeffSh2mBare < 1.0e-5 ) then
           TemperatureAir2mBare = TemperatureGrdBare
           SpecHumidity2mBare   = SpecHumiditySfc
