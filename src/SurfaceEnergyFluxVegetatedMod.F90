@@ -15,6 +15,10 @@ module SurfaceEnergyFluxVegetatedMod
   use ResistanceLeafToGroundMod,           only : ResistanceLeafToGround
   use ResistanceCanopyStomataBallBerryMod, only : ResistanceCanopyStomataBallBerry
   use ResistanceCanopyStomataJarvisMod,    only : ResistanceCanopyStomataJarvis
+#ifdef CCPP
+  use SurfaceExchangeGFSMod,  only : UpdateNoahmpSurfaceExchangeGFS
+  use SurfaceExchangeMYNNMod, only : UpdateNoahmpSurfaceExchangeMYNN
+#endif
 
   implicit none
 
@@ -230,6 +234,13 @@ contains
        ! aerodyn resistances between RefHeightAboveGrd and d+z0v
        if ( OptSurfaceDrag == 1 ) call ResistanceAboveCanopyMOST(noahmp, IndIter, ShCanTmp, MoStabParaSgn)
        if ( OptSurfaceDrag == 2 ) call ResistanceAboveCanopyChen97(noahmp, IndIter)
+#ifdef CCPP
+       if ( OptSurfaceDrag == 3 ) &
+          call UpdateNoahmpSurfaceExchangeGFS(noahmp, TemperatureCanopyAir, .true.)
+       if ( OptSurfaceDrag == 4 ) &
+          call UpdateNoahmpSurfaceExchangeMYNN(noahmp, TemperatureCanopyAir, &
+               ShCanTmp, MoistureFluxSfc, .true.)
+#endif
 
        ! aerodyn resistance between z0g and d+z0v, and leaf boundary layer resistance
        call ResistanceLeafToGround(noahmp, IndIter, VegAreaIndTmp, ShGrdTmp)
@@ -339,6 +350,11 @@ contains
 
        ! consistent specific humidity from canopy air vapor pressure
        SpecHumiditySfc = (0.622 * PressureVaporCanAir) / (PressureAirRefHeight - 0.378 * PressureVaporCanAir)
+#ifdef CCPP
+       if ( OptSurfaceDrag == 4 ) &
+          MoistureFluxSfc = (SpecHumiditySfc - SpecHumidityRefHeight) * &
+                            DensityAirRefHeight * ExchCoeffLhAbvCan
+#endif
        if ( LastIter == 1 ) then
           exit loop1
        endif
@@ -417,6 +433,10 @@ contains
       !ExchCoeffSh2mVeg = FrictionVelVeg * 1.0 / ConstVonKarman * log((2.0+RoughLenShCanopy)/RoughLenShCanopy)
       !ExchCoeffSh2mVeg = FrictionVelVeg * ConstVonKarman / log((2.0+RoughLenShCanopy)/RoughLenShCanopy)
        ExchCoeffSh2mVeg = FrictionVelVeg * ConstVonKarman / (log((2.0+RoughLenShCanopy)/RoughLenShCanopy) - MoStabCorrShVeg2m)
+#ifdef CCPP
+    endif
+    if ( (OptSurfaceDrag >= 1) .and. (OptSurfaceDrag <= 4) ) then
+#endif
        if ( ExchCoeffSh2mVeg < 1.0e-5 ) then
           TemperatureAir2mVeg = TemperatureCanopyAir
          !SpecHumidity2mVeg   = (PressureVaporCanAir*0.622/(PressureAirRefHeight - 0.378*PressureVaporCanAir))
