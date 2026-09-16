@@ -199,6 +199,9 @@ module ConfigVarType
     logical                :: FlagSoilProcess             ! flag to determine if calculating soil processes
     integer                :: GridIndexI                  ! model grid index in x-direction
     integer                :: GridIndexJ                  ! model grid index in y-direction
+#ifdef CCPP
+    integer                :: TimeStepIndex               ! current host-model timestep index
+#endif
     integer                :: VegType                     ! vegetation type
     integer                :: CropType                    ! crop type
     integer                :: NumSoilLayer                ! number of soil layers
