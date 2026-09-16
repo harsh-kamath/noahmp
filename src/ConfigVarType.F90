@@ -45,6 +45,18 @@ module ConfigVarType
     integer :: OptSurfaceDrag              ! options for surface layer drag/exchange coefficient
                                               ! 1 -> Monin-Obukhov (M-O) Similarity Theory (MOST)
                                               ! 2 -> original Noah (Chen et al. 1997)
+#ifdef CCPP
+                                              ! 3 -> GFS surface exchange (CCPP driver only)
+                                              ! 4 -> MYNN surface exchange (CCPP driver only)
+    integer :: OptSurfaceStabilityFunction ! stability functions for the MYNN surface exchange
+                                              ! 0 -> MYNN stability functions
+                                              ! 1 -> GFS stability functions
+    integer :: OptSurfaceThermalRoughness  ! thermal/moisture roughness option for MYNN surface exchange
+                                              ! 0 -> Zilitinkevich (1995)
+                                              ! 1 -> Chen and Zhang (2009) variable coefficient
+                                              ! 2 -> Yang et al. (2008)
+                                              ! 3 -> Garratt (1992)
+#endif
     integer :: OptStomataResistance        ! options for canopy stomatal resistance
                                               ! 1 -> Ball-Berry scheme
                                               ! 2 -> Jarvis scheme
