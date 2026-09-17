@@ -122,7 +122,7 @@ module noahmp
 
   public :: noahmp_init
   public :: noahmp_run
-  public :: noahmp_finalize
+  public :: noahmp_final
 
 contains
 
@@ -2622,10 +2622,10 @@ contains
 
   end subroutine SaveCropState
 
-  !> \section arg_table_noahmp_finalize Argument Table
-  !! \htmlinclude noahmp_finalize.html
+  !> \section arg_table_noahmp_final Argument Table
+  !! \htmlinclude noahmp_final.html
   !!
-  subroutine noahmp_finalize(errmsg, errflg)
+  subroutine noahmp_final(errmsg, errflg)
 
     character(len=*), intent(out) :: errmsg
     integer, intent(out)          :: errflg
@@ -2641,6 +2641,6 @@ contains
     if (allocated(NoahmpIO)) deallocate(NoahmpIO)
     is_initialized = .false.
 
-  end subroutine noahmp_finalize
+  end subroutine noahmp_final
 
 end module noahmp

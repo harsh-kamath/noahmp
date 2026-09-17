@@ -434,7 +434,7 @@ def dimensions(argument: Argument, scheme_name: str) -> str:
         return (
             "(horizontal_loop_extent,"
             "lower_bound_of_vertical_dimension_of_surface_snow:"
-            "0)"
+            "upper_bound_of_vertical_dimension_of_surface_snow)"
         )
     if argument.local_name in RADIATION_BANDED:
         # Noah-MP and both legacy and modular table readers fix this extent at
@@ -826,7 +826,7 @@ def main() -> None:
     raw_source = SOURCE.read_text(encoding="utf-8")
     # CCPP prebuild reads noahmp.meta only through these source annotations.
     # A matching metadata file is insufficient if an annotation was removed.
-    for scheme_name in ("noahmp_init", "noahmp_run", "noahmp_finalize"):
+    for scheme_name in ("noahmp_init", "noahmp_run", "noahmp_final"):
         anchor = (
             rf"(?m)^\s*!>\s*\\section\s+arg_table_{scheme_name}\b[^\n]*\n"
             rf"\s*!!\s*\\htmlinclude\s+{scheme_name}\.html\s*$"
@@ -836,12 +836,12 @@ def main() -> None:
     source = preprocess_ccpp_source(raw_source)
     schemes = {
         name: parse_scheme(source, name)
-        for name in ("noahmp_init", "noahmp_run", "noahmp_finalize")
+        for name in ("noahmp_init", "noahmp_run", "noahmp_final")
     }
     expected_counts = {
         "noahmp_init": 45,
         "noahmp_run": 140,
-        "noahmp_finalize": 2,
+        "noahmp_final": 2,
     }
     actual_counts = {name: len(args) for name, args in schemes.items()}
     if actual_counts != expected_counts:

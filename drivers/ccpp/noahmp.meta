@@ -753,7 +753,7 @@
   standard_name = temperature_in_surface_snow
   long_name = snow temperature
   units = K
-  dimensions = (horizontal_loop_extent,lower_bound_of_vertical_dimension_of_surface_snow:0)
+  dimensions = (horizontal_loop_extent,lower_bound_of_vertical_dimension_of_surface_snow:upper_bound_of_vertical_dimension_of_surface_snow)
   type = real
   kind = kind_phys
   intent = inout
@@ -973,7 +973,7 @@
   standard_name = lwe_thickness_of_ice_in_surface_snow
   long_name = snow layer ice
   units = mm
-  dimensions = (horizontal_loop_extent,lower_bound_of_vertical_dimension_of_surface_snow:0)
+  dimensions = (horizontal_loop_extent,lower_bound_of_vertical_dimension_of_surface_snow:upper_bound_of_vertical_dimension_of_surface_snow)
   type = real
   kind = kind_phys
   intent = inout
@@ -982,7 +982,7 @@
   standard_name = lwe_thickness_of_liquid_water_in_surface_snow
   long_name = snow layer liquid water
   units = mm
-  dimensions = (horizontal_loop_extent,lower_bound_of_vertical_dimension_of_surface_snow:0)
+  dimensions = (horizontal_loop_extent,lower_bound_of_vertical_dimension_of_surface_snow:upper_bound_of_vertical_dimension_of_surface_snow)
   type = real
   kind = kind_phys
   intent = inout
@@ -1643,7 +1643,7 @@
   intent = out
 ########################################################################
 [ccpp-arg-table]
-  name = noahmp_finalize
+  name = noahmp_final
   type = scheme
 [errmsg]
   standard_name = ccpp_error_message
