@@ -16,11 +16,16 @@ module StabilityFunctionsMod
   integer, parameter, public :: StabilityFunctionMynn = 0
   integer, parameter, public :: StabilityFunctionGfs  = 1
 
-  real(kind=kind_noahmp), save :: MomentumStableTable(0:1000)
-  real(kind=kind_noahmp), save :: MomentumUnstableTable(0:1000)
-  real(kind=kind_noahmp), save :: HeatStableTable(0:1000)
-  real(kind=kind_noahmp), save :: HeatUnstableTable(0:1000)
-  integer, save :: InitializedOption = -1
+  ! Initialized during the serialized CCPP init phase, then read-only.
+  real(kind=kind_noahmp), save :: MomentumStableTable( &
+       0:1000, StabilityFunctionMynn:StabilityFunctionGfs)
+  real(kind=kind_noahmp), save :: MomentumUnstableTable( &
+       0:1000, StabilityFunctionMynn:StabilityFunctionGfs)
+  real(kind=kind_noahmp), save :: HeatStableTable( &
+       0:1000, StabilityFunctionMynn:StabilityFunctionGfs)
+  real(kind=kind_noahmp), save :: HeatUnstableTable( &
+       0:1000, StabilityFunctionMynn:StabilityFunctionGfs)
+  logical, save :: StabilityTablesInitialized = .false.
 
   public :: InitializeStabilityFunctions
   public :: MomentumStabilityFunction
@@ -51,21 +56,28 @@ contains
        return
     endif
 
+    if ( StabilityTablesInitialized ) return
+
     do TableIndex = 0, 1000
        MoninObukhovParameter = 0.01_kind_noahmp*real(TableIndex, kind_noahmp)
-       if ( StabilityFunctionOption == StabilityFunctionMynn ) then
-          MomentumStableTable(TableIndex) = MynnMomentumStable(MoninObukhovParameter)
-          HeatStableTable(TableIndex) = MynnHeatStable(MoninObukhovParameter)
-          MomentumUnstableTable(TableIndex) = MynnMomentumUnstable(-MoninObukhovParameter)
-          HeatUnstableTable(TableIndex) = MynnHeatUnstable(-MoninObukhovParameter)
-       else
-          MomentumStableTable(TableIndex) = GfsMomentumStable(MoninObukhovParameter)
-          HeatStableTable(TableIndex) = GfsHeatStable(MoninObukhovParameter)
-          MomentumUnstableTable(TableIndex) = GfsMomentumUnstable(-MoninObukhovParameter)
-          HeatUnstableTable(TableIndex) = GfsHeatUnstable(-MoninObukhovParameter)
-       endif
+       MomentumStableTable(TableIndex, StabilityFunctionMynn) = &
+            MynnMomentumStable(MoninObukhovParameter)
+       HeatStableTable(TableIndex, StabilityFunctionMynn) = &
+            MynnHeatStable(MoninObukhovParameter)
+       MomentumUnstableTable(TableIndex, StabilityFunctionMynn) = &
+            MynnMomentumUnstable(-MoninObukhovParameter)
+       HeatUnstableTable(TableIndex, StabilityFunctionMynn) = &
+            MynnHeatUnstable(-MoninObukhovParameter)
+       MomentumStableTable(TableIndex, StabilityFunctionGfs) = &
+            GfsMomentumStable(MoninObukhovParameter)
+       HeatStableTable(TableIndex, StabilityFunctionGfs) = &
+            GfsHeatStable(MoninObukhovParameter)
+       MomentumUnstableTable(TableIndex, StabilityFunctionGfs) = &
+            GfsMomentumUnstable(-MoninObukhovParameter)
+       HeatUnstableTable(TableIndex, StabilityFunctionGfs) = &
+            GfsHeatUnstable(-MoninObukhovParameter)
     enddo
-    InitializedOption = StabilityFunctionOption
+    StabilityTablesInitialized = .true.
 
   end subroutine InitializeStabilityFunctions
 
@@ -81,13 +93,15 @@ contains
 
     TableIndex = int(abs(MoninObukhovParameter)*100.0_kind_noahmp)
     TableFraction = abs(MoninObukhovParameter)*100.0_kind_noahmp - TableIndex
-    if ( InitializedOption == StabilityFunctionOption .and. TableIndex+1 < 1000 ) then
+    if ( StabilityTablesInitialized .and. TableIndex+1 < 1000 ) then
        if ( MoninObukhovParameter >= 0.0_kind_noahmp ) then
-          StabilityCorrection = MomentumStableTable(TableIndex) + TableFraction * &
-               (MomentumStableTable(TableIndex+1)-MomentumStableTable(TableIndex))
+          StabilityCorrection = MomentumStableTable(TableIndex, StabilityFunctionOption) + &
+               TableFraction * (MomentumStableTable(TableIndex+1, StabilityFunctionOption) - &
+               MomentumStableTable(TableIndex, StabilityFunctionOption))
        else
-          StabilityCorrection = MomentumUnstableTable(TableIndex) + TableFraction * &
-               (MomentumUnstableTable(TableIndex+1)-MomentumUnstableTable(TableIndex))
+          StabilityCorrection = MomentumUnstableTable(TableIndex, StabilityFunctionOption) + &
+               TableFraction * (MomentumUnstableTable(TableIndex+1, StabilityFunctionOption) - &
+               MomentumUnstableTable(TableIndex, StabilityFunctionOption))
        endif
        return
     endif
@@ -120,13 +134,15 @@ contains
 
     TableIndex = int(abs(MoninObukhovParameter)*100.0_kind_noahmp)
     TableFraction = abs(MoninObukhovParameter)*100.0_kind_noahmp - TableIndex
-    if ( InitializedOption == StabilityFunctionOption .and. TableIndex+1 < 1000 ) then
+    if ( StabilityTablesInitialized .and. TableIndex+1 < 1000 ) then
        if ( MoninObukhovParameter >= 0.0_kind_noahmp ) then
-          StabilityCorrection = HeatStableTable(TableIndex) + TableFraction * &
-               (HeatStableTable(TableIndex+1)-HeatStableTable(TableIndex))
+          StabilityCorrection = HeatStableTable(TableIndex, StabilityFunctionOption) + &
+               TableFraction * (HeatStableTable(TableIndex+1, StabilityFunctionOption) - &
+               HeatStableTable(TableIndex, StabilityFunctionOption))
        else
-          StabilityCorrection = HeatUnstableTable(TableIndex) + TableFraction * &
-               (HeatUnstableTable(TableIndex+1)-HeatUnstableTable(TableIndex))
+          StabilityCorrection = HeatUnstableTable(TableIndex, StabilityFunctionOption) + &
+               TableFraction * (HeatUnstableTable(TableIndex+1, StabilityFunctionOption) - &
+               HeatUnstableTable(TableIndex, StabilityFunctionOption))
        endif
        return
     endif

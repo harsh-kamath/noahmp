@@ -243,6 +243,7 @@ INIT_STANDARD_NAME_OVERRIDES = {
 # quantities that have different physical units.  Keep the modular Noah-MP
 # boundary explicit rather than silently advertising an incompatible field.
 RUN_STANDARD_NAME_OVERRIDES = {
+    "horizontal_loop_extent": "horizontal_dimension",
     "timestep_index": "index_of_timestep",
     "depth_of_soil_layer_interfaces": "depth_of_soil_layers",
     "active_snow_layer_lower_index": "number_of_snow_layers",
@@ -416,23 +417,23 @@ def dimensions(argument: Argument, scheme_name: str) -> str:
     if argument.local_name == "depth_of_soil_layer_interfaces":
         return "(vertical_dimension_of_soil_internal_to_land_surface_scheme)"
     if argument.local_name == "soil_category_at_layer":
-        return "(horizontal_loop_extent,4)"
+        return "(horizontal_dimension,4)"
     if argument.local_name == "equilibrium_soil_moisture":
         return (
-            "(horizontal_loop_extent,"
+            "(horizontal_dimension,"
             "vertical_dimension_of_soil_internal_to_land_surface_scheme)"
         )
     if argument.local_name == "depth_of_snow_soil_layer_interfaces":
         return (
-            "(horizontal_loop_extent,"
+            "(horizontal_dimension,"
             "lower_bound_of_vertical_dimension_of_surface_snow:"
             "vertical_dimension_of_soil_internal_to_land_surface_scheme)"
         )
     if argument.local_name in SOIL_LAYERED and argument.rank == 2:
-        return "(horizontal_loop_extent,vertical_dimension_of_soil)"
+        return "(horizontal_dimension,vertical_dimension_of_soil)"
     if argument.local_name in SNOW_LAYERED:
         return (
-            "(horizontal_loop_extent,"
+            "(horizontal_dimension,"
             "lower_bound_of_vertical_dimension_of_surface_snow:"
             "upper_bound_of_vertical_dimension_of_surface_snow)"
         )
@@ -440,9 +441,9 @@ def dimensions(argument: Argument, scheme_name: str) -> str:
         # Noah-MP and both legacy and modular table readers fix this extent at
         # two bands. A literal keeps the CCPP host interface free of a
         # redundant dimension variable.
-        return "(horizontal_loop_extent,2)"
+        return "(horizontal_dimension,2)"
     if argument.rank == 1:
-        return "(horizontal_loop_extent)"
+        return "(horizontal_dimension)"
     raise RuntimeError(f"No dimension mapping for {argument.local_name}")
 
 
@@ -720,6 +721,8 @@ def units(argument: Argument) -> str:
     if argument.type_name == "logical":
         return "flag"
     if argument.type_name == "integer":
+        if name == "instance_number":
+            return "1"
         if name == "timestep_for_physics":
             return "s"
         if name == "number_of_days_in_current_year":
@@ -799,8 +802,36 @@ def validate(arguments: dict[str, list[Argument]], metadata: str) -> None:
             r"(?m)^\[([^\]]+)\]\s*$", table.group(2)
         )
 
+    lifecycle_prefixes = {
+        "noahmp_init": ["instance_number", "number_of_instances"],
+        "noahmp_run": ["instance_number"],
+        "noahmp_final": ["instance_number"],
+    }
+
     for scheme_name, source_arguments in arguments.items():
         source_names = [argument.local_name for argument in source_arguments]
+        required_prefix = lifecycle_prefixes[scheme_name]
+        if source_names[:len(required_prefix)] != required_prefix:
+            raise RuntimeError(
+                f"{scheme_name} must begin with CCPP controls {required_prefix}"
+            )
+        if source_names[-2:] != ["errmsg", "errflg"]:
+            raise RuntimeError(
+                f"{scheme_name} must end with errmsg and errflg"
+            )
+
+        standard_names = [
+            standard_name(argument, scheme_name)
+            for argument in source_arguments
+        ]
+        duplicates = sorted({
+            name for name in standard_names if standard_names.count(name) > 1
+        })
+        if duplicates:
+            raise RuntimeError(
+                f"Duplicate standard names in {scheme_name}: {duplicates}"
+            )
+
         metadata_names = metadata_tables.get(scheme_name)
         if metadata_names is None:
             raise RuntimeError(f"Missing metadata table for {scheme_name}")
@@ -810,6 +841,14 @@ def validate(arguments: dict[str, list[Argument]], metadata: str) -> None:
                 f"source={source_names}\nmetadata={metadata_names}"
             )
         for argument in source_arguments:
+            if argument.optional and scheme_name != "noahmp_run":
+                raise RuntimeError(
+                    f"Optional argument {argument.local_name} is outside noahmp_run"
+                )
+            if argument.optional and argument.rank == 0:
+                raise RuntimeError(
+                    f"Optional argument {argument.local_name} must be an array"
+                )
             if argument.type_name == "real" and argument.kind != "kind_phys":
                 raise RuntimeError(
                     f"Real argument {argument.local_name} does not use kind_phys"
@@ -839,9 +878,9 @@ def main() -> None:
         for name in ("noahmp_init", "noahmp_run", "noahmp_final")
     }
     expected_counts = {
-        "noahmp_init": 45,
-        "noahmp_run": 140,
-        "noahmp_final": 2,
+        "noahmp_init": 47,
+        "noahmp_run": 168,
+        "noahmp_final": 3,
     }
     actual_counts = {name: len(args) for name, args in schemes.items()}
     if actual_counts != expected_counts:

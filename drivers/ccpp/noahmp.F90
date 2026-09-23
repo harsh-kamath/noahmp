@@ -16,109 +16,18 @@ module noahmp
   implicit none
   private
 
-  type :: NoahmpModularConfig_type
-     integer :: opt_dynamic_vegetation
-     integer :: opt_rain_snow_partition
-     integer :: opt_soil_water_transpiration
-     integer :: opt_ground_resistance_evaporation
-     integer :: opt_surface_drag
-     integer :: opt_surface_stability_function
-     integer :: opt_surface_thermal_roughness
-     integer :: opt_stomata_resistance
-     integer :: opt_snow_albedo
-     integer :: opt_canopy_radiation_transfer
-     integer :: opt_snow_soil_temperature_time
-     integer :: opt_snow_thermal_conductivity
-     integer :: opt_soil_temperature_bottom
-     integer :: opt_soil_supercooled_water
-     integer :: opt_frozen_soil_permeability
-     integer :: opt_dynamic_vic_infiltration
-     integer :: opt_tile_drainage
-     integer :: opt_irrigation
-     integer :: opt_irrigation_method
-     integer :: opt_crop_model
-     integer :: opt_soil_property
-     integer :: opt_pedotransfer
-     integer :: opt_surface_runoff
-     integer :: opt_subsurface_runoff
-     integer :: opt_glacier_treatment
-     integer :: opt_snow_compaction
-     integer :: opt_wetland_model
-     integer :: opt_snow_cover_fraction
-     integer :: snicar_snow_shape
-     integer :: snicar_rt_solver
-     integer :: snicar_band_number
-     integer :: snicar_solar_spectrum
-     integer :: snicar_snow_optics
-     integer :: snicar_dust_optics
-     logical :: snicar_snow_bc_internal_mixing
-     logical :: snicar_snow_dust_internal_mixing
-     logical :: snicar_use_aerosol
-     logical :: snicar_use_organic_carbon
-     logical :: snicar_read_aerosol_table
-     character(len=256) :: land_use_data_name
-     integer :: water_category
-     integer :: barren_category
-     integer :: ice_category
-     integer :: crop_category
-     integer :: evergreen_broadleaf_forest_category
-     integer :: urban_category
-     integer :: natural_vegetation_category
-     integer :: urban_category_begin
-     integer :: default_crop_category
-     integer :: runoff_slope_category
-     integer :: urban_physics_option
-     real(kind=kind_phys) :: soil_temperature_bottom_depth
-  end type NoahmpModularConfig_type
 
-  type :: NoahmpAccumulatorState_type
-     real(kind=kind_phys), allocatable :: ACC_SSOILXY(:)
-     real(kind=kind_phys), allocatable :: IRRSPLH(:)
-     real(kind=kind_phys), allocatable :: ACC_QSEVAXY(:)
-     real(kind=kind_phys), allocatable :: ACC_QINSURXY(:)
-     real(kind=kind_phys), allocatable :: ACC_DWATERXY(:)
-     real(kind=kind_phys), allocatable :: ACC_PRCPXY(:)
-     real(kind=kind_phys), allocatable :: ACC_ECANXY(:)
-     real(kind=kind_phys), allocatable :: ACC_ETRANXY(:)
-     real(kind=kind_phys), allocatable :: ACC_EDIRXY(:)
-     real(kind=kind_phys), allocatable :: ACC_ETRANIXY(:,:)
-     real(kind=kind_phys), allocatable :: ACC_GLAFLWXY(:)
-     real(kind=kind_phys), allocatable :: SFCRUNOFF(:)
-     real(kind=kind_phys), allocatable :: UDRUNOFF(:)
-     real(kind=kind_phys), allocatable :: QTDRAIN(:)
-     real(kind=kind_phys), allocatable :: ACSNOW(:)
-     real(kind=kind_phys), allocatable :: ACSNOM(:)
-     real(kind=kind_phys), allocatable :: RECHXY(:)
-     real(kind=kind_phys), allocatable :: DEEPRECHXY(:)
-     real(kind=kind_phys), allocatable :: IRSIVOL(:)
-     real(kind=kind_phys), allocatable :: IRMIVOL(:)
-     real(kind=kind_phys), allocatable :: IRFIVOL(:)
-     real(kind=kind_phys), allocatable :: IRELOSS(:)
-  end type NoahmpAccumulatorState_type
 
-  type :: NoahmpAlbedoState_type
-     real(kind=kind_phys), allocatable :: soil_direct(:,:)
-     real(kind=kind_phys), allocatable :: soil_diffuse(:,:)
-  end type NoahmpAlbedoState_type
-
-  type :: NoahmpCropState_type
-     integer, allocatable :: plant_growth_stage(:)
-     real(kind=kind_phys), allocatable :: grain_mass(:)
-     real(kind=kind_phys), allocatable :: growing_degree_day(:)
-  end type NoahmpCropState_type
-
-  logical, save :: is_initialized = .false.
   integer, parameter :: noahmp_shortwave_radiation_bands = 2
   character(len=*), parameter :: legacy_ccpp_land_use_data_name = &
 								"MODIFIED_IGBP_MODIS_NOAH"
 								
-  type(NoahmpModularConfig_type), save :: configured
-  
-  type(NoahmpIO_type), allocatable, save :: NoahmpIO
-  
-  type(NoahmpAccumulatorState_type), allocatable, save :: accumulator_state
-  type(NoahmpAlbedoState_type), allocatable, save :: albedo_state
-  type(NoahmpCropState_type), allocatable, save :: crop_state
+  type :: NoahmpCcppContext_type
+     type(NoahmpIO_type), allocatable :: io
+  end type NoahmpCcppContext_type
+
+  ! Each CCPP instance owns an independent driver context and workspace.
+  type(NoahmpCcppContext_type), allocatable :: NoahmpContexts(:)
 
   public :: noahmp_init
   public :: noahmp_run
@@ -129,7 +38,8 @@ contains
   !> \section arg_table_noahmp_init Argument Table
   !! \htmlinclude noahmp_init.html
   !!
-  subroutine noahmp_init(horizontal_dimension, vertical_dimension_of_soil, vertical_dimension_of_surface_snow, &
+  subroutine noahmp_init(instance_number, number_of_instances, horizontal_dimension, &
+    vertical_dimension_of_soil, vertical_dimension_of_surface_snow, &
     dynamic_vegetation_option, rain_snow_partition_option, soil_water_transpiration_option, &
     ground_resistance_evaporation_option, surface_drag_option, surface_stability_function_option, &
     surface_thermal_roughness_option, stomata_resistance_option, snow_albedo_option, &
@@ -145,6 +55,8 @@ contains
     snicar_use_aerosol, snicar_use_organic_carbon, snicar_read_aerosol_table, &
     urban_physics_option, errmsg, errflg)
 	
+    integer, intent(in) :: instance_number
+    integer, intent(in) :: number_of_instances
     integer, intent(in) :: horizontal_dimension
     integer, intent(in) :: vertical_dimension_of_soil
     integer, intent(in) :: vertical_dimension_of_surface_snow
@@ -194,10 +106,32 @@ contains
     character(len=*), intent(out) :: errmsg
     integer, intent(out)          :: errflg
 
+    integer :: allocation_status
+    logical :: context_registry_created
+
     errmsg = ''
     errflg = 0
 
-    if (is_initialized) return
+    if (number_of_instances <= 0) then
+       errflg = 1
+       errmsg = 'noahmp_init: number_of_instances must be positive'
+       return
+    end if
+    if (instance_number < 1 .or. instance_number > number_of_instances) then
+       errflg = 1
+       errmsg = 'noahmp_init: instance_number is outside number_of_instances'
+       return
+    end if
+
+    context_registry_created = .false.
+    if (allocated(NoahmpContexts)) then
+       if (size(NoahmpContexts) /= number_of_instances) then
+          errflg = 1
+          errmsg = 'noahmp_init: number_of_instances changed after context allocation'
+          return
+       end if
+       if (allocated(NoahmpContexts(instance_number)%io)) return
+    end if
 
     if (horizontal_dimension <= 0 .or. vertical_dimension_of_soil <= 0 .or. &
         vertical_dimension_of_surface_snow <= 0 .or. &
@@ -212,8 +146,6 @@ contains
        errmsg = 'noahmp_init: surface_drag_option must be in the range 1 through 4'
        return
     end if
-    call InitializeStabilityFunctions(surface_stability_function_option, errmsg, errflg)
-    if (errflg /= 0) return
     if (surface_thermal_roughness_option < 0 .or. &
         surface_thermal_roughness_option > 3) then
        errflg = 1
@@ -221,18 +153,86 @@ contains
        return
     end if
 
-    allocate(NoahmpIO)
+    if (snow_albedo_option == 3 .and. snicar_band_number_option /= 1 .and. &
+        snicar_band_number_option /= 2) then
+       errflg = 1
+       errmsg = 'noahmp_init: snicar_band_number_option must be 1 or 2'
+       return
+    end if
+
+    call InitializeStabilityFunctions(surface_stability_function_option, errmsg, errflg)
+    if (errflg /= 0) return
+
+    if (.not. allocated(NoahmpContexts)) then
+       allocate(NoahmpContexts(number_of_instances), stat=allocation_status)
+       if (allocation_status /= 0) then
+          errflg = 1
+          write(errmsg, '(a,i0)') &
+               'noahmp_init: unable to allocate the context registry; stat=', &
+               allocation_status
+          return
+       end if
+       context_registry_created = .true.
+    end if
+
+    allocate(NoahmpContexts(instance_number)%io, stat=allocation_status)
+    if (allocation_status /= 0) then
+       errflg = 1
+       write(errmsg, '(a,i0,a,i0)') &
+            'noahmp_init: unable to allocate context ', instance_number, &
+            '; stat=', allocation_status
+       if (context_registry_created) deallocate(NoahmpContexts)
+       return
+    end if
+    associate (NoahmpIO => NoahmpContexts(instance_number)%io)
 	
     NoahmpIO%KMS = 1
     NoahmpIO%KME = 2
     NoahmpIO%NSOIL = vertical_dimension_of_soil
     NoahmpIO%NSNOW = vertical_dimension_of_surface_snow
     NoahmpIO%NUMRAD = number_of_shortwave_radiation_bands
+
+    ! The selected instance context owns configuration after initialization.
+    NoahmpIO%IOPT_DVEG = dynamic_vegetation_option
+    NoahmpIO%IOPT_SNF = rain_snow_partition_option
+    NoahmpIO%IOPT_BTR = soil_water_transpiration_option
+    NoahmpIO%IOPT_RSF = ground_resistance_evaporation_option
+    NoahmpIO%IOPT_SFC = surface_drag_option
+    NoahmpIO%PSI_OPT = surface_stability_function_option
+    NoahmpIO%IZ0TLND = surface_thermal_roughness_option
+    NoahmpIO%IOPT_CRS = stomata_resistance_option
     NoahmpIO%IOPT_ALB = snow_albedo_option
+    NoahmpIO%IOPT_RAD = canopy_radiation_transfer_option
+    NoahmpIO%IOPT_STC = snow_soil_temperature_time_option
+    NoahmpIO%IOPT_TKSNO = snow_thermal_conductivity_option
+    NoahmpIO%IOPT_TBOT = soil_temperature_bottom_option
+    NoahmpIO%IOPT_FRZ = soil_supercooled_water_option
+    NoahmpIO%IOPT_INF = frozen_soil_permeability_option
+    NoahmpIO%IOPT_INFDV = dynamic_vic_infiltration_option
+    NoahmpIO%IOPT_TDRN = tile_drainage_option
+    NoahmpIO%IOPT_IRR = irrigation_option
+    NoahmpIO%IOPT_IRRM = irrigation_method_option
+    NoahmpIO%IOPT_CROP = crop_model_option
+    NoahmpIO%IOPT_SOIL = soil_property_option
+    NoahmpIO%IOPT_PEDO = pedotransfer_option
+    NoahmpIO%IOPT_RUNSRF = surface_runoff_option
+    NoahmpIO%IOPT_RUNSUB = subsurface_runoff_option
+    NoahmpIO%IOPT_GLA = glacier_treatment_option
+    NoahmpIO%IOPT_COMPACT = snow_compaction_option
+    NoahmpIO%IOPT_WETLAND = wetland_model_option
+    NoahmpIO%IOPT_SCF = snow_cover_fraction_option
+    NoahmpIO%SNICAR_SNOWSHAPE_OPT = snicar_snow_shape_option
+    NoahmpIO%SNICAR_RTSOLVER_OPT = snicar_rt_solver_option
     NoahmpIO%SNICAR_BANDNUMBER_OPT = snicar_band_number_option
     NoahmpIO%SNICAR_SOLARSPEC_OPT = snicar_solar_spectrum_option
     NoahmpIO%SNICAR_SNOWOPTICS_OPT = snicar_snow_optics_option
     NoahmpIO%SNICAR_DUSTOPTICS_OPT = snicar_dust_optics_option
+    NoahmpIO%SNICAR_SNOWBC_INTMIX = snicar_snow_bc_internal_mixing
+    NoahmpIO%SNICAR_SNOWDUST_INTMIX = snicar_snow_dust_internal_mixing
+    NoahmpIO%SNICAR_USE_AEROSOL = snicar_use_aerosol
+    NoahmpIO%SNICAR_USE_OC = snicar_use_organic_carbon
+    NoahmpIO%SNICAR_AEROSOL_READTABLE = snicar_read_aerosol_table
+    NoahmpIO%SF_URBAN_PHYSICS = urban_physics_option
 	
     if (snow_albedo_option == 3) then
        select case (snicar_band_number_option)
@@ -242,19 +242,11 @@ contains
        case (2)
           NoahmpIO%snicar_numrad_snw = 480
           NoahmpIO%snicar_optic_flnm = 'snicar_optics_480bnd_c012422.nc'
-       case default
-          errflg = 1
-          errmsg = 'noahmp_init: snicar_band_number_option must be 1 or 2'
-          deallocate(NoahmpIO)
-          return
        end select
        NoahmpIO%snicar_age_flnm = 'snicar_drdt_bst_fit_60_c070416.nc'
     endif
 	
     call NoahmpIOVarInitDefault(NoahmpIO, horizontal_dimension)
-    call InitializeAccumulatorState(horizontal_dimension, vertical_dimension_of_soil)
-    call InitializeAlbedoState(horizontal_dimension, number_of_shortwave_radiation_bands)
-    call InitializeCropState(horizontal_dimension)
 
     NoahmpIO%LLANDUSE = legacy_ccpp_land_use_data_name
 	
@@ -265,59 +257,7 @@ contains
        NoahmpIO%SNRDSXY = NoahmpIO%SnowRadiusMin_TABLE
     endif
 
-    configured%opt_dynamic_vegetation = dynamic_vegetation_option
-    configured%opt_rain_snow_partition = rain_snow_partition_option
-    configured%opt_soil_water_transpiration = soil_water_transpiration_option
-    configured%opt_ground_resistance_evaporation = ground_resistance_evaporation_option
-    configured%opt_surface_drag = surface_drag_option
-    configured%opt_surface_stability_function = surface_stability_function_option
-    configured%opt_surface_thermal_roughness = surface_thermal_roughness_option
-    configured%opt_stomata_resistance = stomata_resistance_option
-    configured%opt_snow_albedo = snow_albedo_option
-    configured%opt_canopy_radiation_transfer = canopy_radiation_transfer_option
-    configured%opt_snow_soil_temperature_time = snow_soil_temperature_time_option
-    configured%opt_snow_thermal_conductivity = snow_thermal_conductivity_option
-    configured%opt_soil_temperature_bottom = soil_temperature_bottom_option
-    configured%opt_soil_supercooled_water = soil_supercooled_water_option
-    configured%opt_frozen_soil_permeability = frozen_soil_permeability_option
-    configured%opt_dynamic_vic_infiltration = dynamic_vic_infiltration_option
-    configured%opt_tile_drainage = tile_drainage_option
-    configured%opt_irrigation = irrigation_option
-    configured%opt_irrigation_method = irrigation_method_option
-    configured%opt_crop_model = crop_model_option
-    configured%opt_soil_property = soil_property_option
-    configured%opt_pedotransfer = pedotransfer_option
-    configured%opt_glacier_treatment = glacier_treatment_option
-    configured%opt_surface_runoff = surface_runoff_option
-    configured%opt_subsurface_runoff = subsurface_runoff_option
-    configured%opt_snow_compaction = snow_compaction_option
-    configured%opt_wetland_model = wetland_model_option
-    configured%opt_snow_cover_fraction = snow_cover_fraction_option
-    configured%snicar_snow_shape = snicar_snow_shape_option
-    configured%snicar_rt_solver = snicar_rt_solver_option
-    configured%snicar_band_number = snicar_band_number_option
-    configured%snicar_solar_spectrum = snicar_solar_spectrum_option
-    configured%snicar_snow_optics = snicar_snow_optics_option
-    configured%snicar_dust_optics = snicar_dust_optics_option
-    configured%snicar_snow_bc_internal_mixing = snicar_snow_bc_internal_mixing
-    configured%snicar_snow_dust_internal_mixing = snicar_snow_dust_internal_mixing
-    configured%snicar_use_aerosol = snicar_use_aerosol
-    configured%snicar_use_organic_carbon = snicar_use_organic_carbon
-    configured%snicar_read_aerosol_table = snicar_read_aerosol_table
-    configured%land_use_data_name = NoahmpIO%LLANDUSE
-    configured%water_category = NoahmpIO%ISWATER_TABLE
-    configured%barren_category = NoahmpIO%ISBARREN_TABLE
-    configured%ice_category = NoahmpIO%ISICE_TABLE
-    configured%crop_category = NoahmpIO%ISCROP_TABLE
-    configured%evergreen_broadleaf_forest_category = NoahmpIO%EBLFOREST_TABLE
-    configured%urban_category = NoahmpIO%ISURBAN_TABLE
-    configured%natural_vegetation_category = NoahmpIO%NATURAL_TABLE
-    configured%urban_category_begin = NoahmpIO%URBTYPE_beg
-    configured%default_crop_category = NoahmpIO%DEFAULT_CROP_TABLE
-    configured%urban_physics_option = urban_physics_option
-    configured%soil_temperature_bottom_depth = NoahmpIO%ZBOT_TABLE
-
-    is_initialized = .true.
+    end associate
 
   end subroutine noahmp_init
 
@@ -325,7 +265,7 @@ contains
   !> \section arg_table_noahmp_run Argument Table
   !! \htmlinclude noahmp_run.html
   !!
-  subroutine noahmp_run(horizontal_loop_extent, timestep_index, timestep_for_physics, &
+  subroutine noahmp_run(instance_number, horizontal_loop_extent, timestep_index, timestep_for_physics, &
     forecast_julian_day, number_of_days_in_current_year, &
     characteristic_grid_lengthscale, vertical_dimension_of_soil, &
     vertical_dimension_of_surface_snow, &
@@ -357,6 +297,20 @@ contains
     soil_moisture, equilibrium_soil_moisture, leaf_mass, &
     root_mass, stem_mass, wood_mass, &
     deep_soil_carbon_mass, shallow_soil_carbon_mass, &
+    accumulated_ground_heat_flux, sprinkler_heat_accumulation, &
+    accumulated_soil_surface_evaporation, accumulated_soil_surface_inflow, &
+    accumulated_surface_water_change, accumulated_precipitation, &
+    accumulated_canopy_evaporation, accumulated_transpiration, &
+    accumulated_ground_evaporation, accumulated_soil_layer_transpiration, &
+    accumulated_glacier_excess_flow, accumulated_surface_runoff, &
+    accumulated_subsurface_runoff, accumulated_tile_drainage, &
+    accumulated_snowfall, accumulated_snowmelt, &
+    accumulated_shallow_groundwater_recharge, &
+    accumulated_deep_groundwater_recharge, accumulated_sprinkler_irrigation, &
+    accumulated_micro_irrigation, accumulated_flood_irrigation, &
+    accumulated_sprinkler_evaporation_loss, direct_soil_albedo, &
+    diffuse_soil_albedo, plant_growth_stage, grain_mass, &
+    growing_degree_day, &
     wilting_soil_moisture, reference_soil_moisture, &
     surface_radiative_temperature, surface_emissivity, &
     surface_roughness_length, temperature_at_2m_from_noahmp, &
@@ -403,6 +357,7 @@ contains
     flag_for_iteration, flag_nonzero_land_surface_fraction, &
     apply_urban_irrigation, errmsg, errflg)
 	
+    integer, intent(in)                    :: instance_number
     integer, intent(in)                    :: horizontal_loop_extent
     integer, intent(in)                    :: timestep_index
     real(kind=kind_phys), intent(in)        :: timestep_for_physics
@@ -479,6 +434,33 @@ contains
     real(kind=kind_phys), intent(inout), optional :: wood_mass(:)
     real(kind=kind_phys), intent(inout), optional :: deep_soil_carbon_mass(:)
     real(kind=kind_phys), intent(inout), optional :: shallow_soil_carbon_mass(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_ground_heat_flux(:)
+    real(kind=kind_phys), intent(inout) :: sprinkler_heat_accumulation(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_soil_surface_evaporation(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_soil_surface_inflow(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_surface_water_change(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_precipitation(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_canopy_evaporation(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_transpiration(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_ground_evaporation(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_soil_layer_transpiration(:,:)
+    real(kind=kind_phys), intent(inout) :: accumulated_glacier_excess_flow(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_surface_runoff(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_subsurface_runoff(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_tile_drainage(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_snowfall(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_snowmelt(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_shallow_groundwater_recharge(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_deep_groundwater_recharge(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_sprinkler_irrigation(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_micro_irrigation(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_flood_irrigation(:)
+    real(kind=kind_phys), intent(inout) :: accumulated_sprinkler_evaporation_loss(:)
+    real(kind=kind_phys), intent(inout) :: direct_soil_albedo(:,:)
+    real(kind=kind_phys), intent(inout) :: diffuse_soil_albedo(:,:)
+    integer, intent(inout) :: plant_growth_stage(:)
+    real(kind=kind_phys), intent(inout) :: grain_mass(:)
+    real(kind=kind_phys), intent(inout) :: growing_degree_day(:)
     real(kind=kind_phys), intent(inout)  :: wilting_soil_moisture(:)
     real(kind=kind_phys), intent(inout)  :: reference_soil_moisture(:)
     real(kind=kind_phys), intent(inout)    :: surface_radiative_temperature(:)
@@ -562,11 +544,23 @@ contains
     errmsg = ''
     errflg = 0
 
-    if (.not. is_initialized) then
+    if (.not. allocated(NoahmpContexts)) then
        errflg = 1
        errmsg = 'noahmp_run called before noahmp_init'
        return
     end if
+    if (instance_number < 1 .or. instance_number > size(NoahmpContexts)) then
+       errflg = 1
+       errmsg = 'noahmp_run: instance_number is outside the allocated context range'
+       return
+    end if
+    if (.not. allocated(NoahmpContexts(instance_number)%io)) then
+       errflg = 1
+       errmsg = 'noahmp_run called before noahmp_init for this instance'
+       return
+    end if
+
+    associate (NoahmpIO => NoahmpContexts(instance_number)%io)
 
     if (horizontal_loop_extent < 0) then
        errflg = 1
@@ -1707,48 +1701,8 @@ contains
     NoahmpIO%ITIMESTEP = timestep_index
     NoahmpIO%THSFC_LOC = flag_for_reference_pressure_theta
 
-    NoahmpIO%IOPT_DVEG = configured%opt_dynamic_vegetation
-    NoahmpIO%IOPT_SNF = configured%opt_rain_snow_partition
-    NoahmpIO%IOPT_BTR = configured%opt_soil_water_transpiration
-    NoahmpIO%IOPT_RSF = configured%opt_ground_resistance_evaporation
-    NoahmpIO%IOPT_SFC = configured%opt_surface_drag
-    NoahmpIO%PSI_OPT = configured%opt_surface_stability_function
-    NoahmpIO%IZ0TLND = configured%opt_surface_thermal_roughness
-    NoahmpIO%IOPT_CRS = configured%opt_stomata_resistance
-    NoahmpIO%IOPT_ALB = configured%opt_snow_albedo
-    NoahmpIO%IOPT_RAD = configured%opt_canopy_radiation_transfer
-    NoahmpIO%IOPT_STC = configured%opt_snow_soil_temperature_time
-    NoahmpIO%IOPT_TKSNO = configured%opt_snow_thermal_conductivity
-    NoahmpIO%IOPT_TBOT = configured%opt_soil_temperature_bottom
-    NoahmpIO%IOPT_FRZ = configured%opt_soil_supercooled_water
-    NoahmpIO%IOPT_INF = configured%opt_frozen_soil_permeability
-    NoahmpIO%IOPT_INFDV = configured%opt_dynamic_vic_infiltration
-    NoahmpIO%IOPT_TDRN = configured%opt_tile_drainage
-    NoahmpIO%IOPT_IRR = configured%opt_irrigation
-    NoahmpIO%IOPT_IRRM = configured%opt_irrigation_method
-    NoahmpIO%IOPT_CROP = configured%opt_crop_model
-    NoahmpIO%IOPT_SOIL = configured%opt_soil_property
-    NoahmpIO%IOPT_PEDO = configured%opt_pedotransfer
-    NoahmpIO%IOPT_RUNSRF = configured%opt_surface_runoff
-    NoahmpIO%IOPT_RUNSUB = configured%opt_subsurface_runoff
-    NoahmpIO%IOPT_GLA = configured%opt_glacier_treatment
-    NoahmpIO%IOPT_COMPACT = configured%opt_snow_compaction
-    NoahmpIO%IOPT_WETLAND = configured%opt_wetland_model
-    NoahmpIO%IOPT_SCF = configured%opt_snow_cover_fraction
-    NoahmpIO%LLANDUSE = configured%land_use_data_name
-    NoahmpIO%ISWATER_TABLE = configured%water_category
-    NoahmpIO%ISBARREN_TABLE = configured%barren_category
-    NoahmpIO%ISICE_TABLE = configured%ice_category
-    NoahmpIO%ISCROP_TABLE = configured%crop_category
-    NoahmpIO%EBLFOREST_TABLE = configured%evergreen_broadleaf_forest_category
-    NoahmpIO%ISURBAN_TABLE = configured%urban_category
-    NoahmpIO%NATURAL_TABLE = configured%natural_vegetation_category
-    NoahmpIO%URBTYPE_beg = configured%urban_category_begin
-    NoahmpIO%DEFAULT_CROP_TABLE = configured%default_crop_category
     NoahmpIO%SLOPETYP(1:number_of_active_columns) = &
          surface_slope_classification(active_source_column(1:number_of_active_columns))
-    NoahmpIO%SF_URBAN_PHYSICS = configured%urban_physics_option
-    NoahmpIO%ZBOT_TABLE = configured%soil_temperature_bottom_depth
 
     NoahmpIO%ZSOIL(1:vertical_dimension_of_soil) = &
          depth_of_soil_layer_interfaces(1:vertical_dimension_of_soil)
@@ -1757,7 +1711,7 @@ contains
     NoahmpIO%SOILCOL(1:number_of_active_columns) = &
          soil_color_classification(active_source_column(1:number_of_active_columns))
 
-    if (configured%opt_crop_model > 0 .or. configured%opt_irrigation == 2) then
+    if (NoahmpIO%IOPT_CROP > 0 .or. NoahmpIO%IOPT_IRR == 2) then
        NoahmpIO%CROPCAT(1:number_of_active_columns) = &
             merge(NoahmpIO%DEFAULT_CROP_TABLE, 0, &
                   NoahmpIO%IVGTYP(1:number_of_active_columns) == NoahmpIO%ISCROP_TABLE)
@@ -1815,8 +1769,14 @@ contains
          transpose(snow_temperature(active_source_column(1:number_of_active_columns), &
                           lower_bound_of_vertical_dimension_of_surface_snow: &
                           upper_bound_of_vertical_dimension_of_surface_snow))
-    call LoadAlbedoState(active_source_column, number_of_active_columns, &
-                         number_of_shortwave_radiation_bands)
+    NoahmpIO%ALBSOILDIRXY(1:number_of_shortwave_radiation_bands, &
+                              1:number_of_active_columns) = &
+         transpose(direct_soil_albedo(active_source_column(1:number_of_active_columns), &
+                                      1:number_of_shortwave_radiation_bands))
+    NoahmpIO%ALBSOILDIFXY(1:number_of_shortwave_radiation_bands, &
+                              1:number_of_active_columns) = &
+         transpose(diffuse_soil_albedo(active_source_column(1:number_of_active_columns), &
+                                       1:number_of_shortwave_radiation_bands))
 
     NoahmpIO%CANLIQXY(1:number_of_active_columns) = &
          canopy_liquid_water(active_source_column(1:number_of_active_columns))
@@ -1885,13 +1845,71 @@ contains
     NoahmpIO%SMOISEQ(1:vertical_dimension_of_soil,1:number_of_active_columns) = &
          transpose(equilibrium_soil_moisture(active_source_column(1:number_of_active_columns), &
                                    1:vertical_dimension_of_soil))
-    call LoadAccumulatorState(active_source_column, number_of_active_columns, &
-                              vertical_dimension_of_soil)
+    NoahmpIO%ACC_SSOILXY(1:number_of_active_columns) = &
+         accumulated_ground_heat_flux(active_source_column(1:number_of_active_columns))
+    NoahmpIO%IRRSPLH(1:number_of_active_columns) = &
+         sprinkler_heat_accumulation(active_source_column(1:number_of_active_columns))
+    NoahmpIO%ACC_QSEVAXY(1:number_of_active_columns) = &
+         accumulated_soil_surface_evaporation(active_source_column(1:number_of_active_columns))
+    NoahmpIO%ACC_QINSURXY(1:number_of_active_columns) = &
+         accumulated_soil_surface_inflow(active_source_column(1:number_of_active_columns))
+    NoahmpIO%ACC_DWATERXY(1:number_of_active_columns) = &
+         accumulated_surface_water_change(active_source_column(1:number_of_active_columns))
+    NoahmpIO%ACC_PRCPXY(1:number_of_active_columns) = &
+         accumulated_precipitation(active_source_column(1:number_of_active_columns))
+    NoahmpIO%ACC_ECANXY(1:number_of_active_columns) = &
+         accumulated_canopy_evaporation(active_source_column(1:number_of_active_columns))
+    NoahmpIO%ACC_ETRANXY(1:number_of_active_columns) = &
+         accumulated_transpiration(active_source_column(1:number_of_active_columns))
+    NoahmpIO%ACC_EDIRXY(1:number_of_active_columns) = &
+         accumulated_ground_evaporation(active_source_column(1:number_of_active_columns))
+    NoahmpIO%ACC_GLAFLWXY(1:number_of_active_columns) = &
+         accumulated_glacier_excess_flow(active_source_column(1:number_of_active_columns))
+    NoahmpIO%SFCRUNOFF(1:number_of_active_columns) = &
+         accumulated_surface_runoff(active_source_column(1:number_of_active_columns))
+    NoahmpIO%UDRUNOFF(1:number_of_active_columns) = &
+         accumulated_subsurface_runoff(active_source_column(1:number_of_active_columns))
+    NoahmpIO%QTDRAIN(1:number_of_active_columns) = &
+         accumulated_tile_drainage(active_source_column(1:number_of_active_columns))
+    NoahmpIO%ACSNOW(1:number_of_active_columns) = &
+         accumulated_snowfall(active_source_column(1:number_of_active_columns))
+    NoahmpIO%ACSNOM(1:number_of_active_columns) = &
+         accumulated_snowmelt(active_source_column(1:number_of_active_columns))
+    NoahmpIO%RECHXY(1:number_of_active_columns) = &
+         accumulated_shallow_groundwater_recharge(active_source_column(1:number_of_active_columns))
+    NoahmpIO%DEEPRECHXY(1:number_of_active_columns) = &
+         accumulated_deep_groundwater_recharge(active_source_column(1:number_of_active_columns))
+    NoahmpIO%IRSIVOL(1:number_of_active_columns) = &
+         accumulated_sprinkler_irrigation(active_source_column(1:number_of_active_columns))
+    NoahmpIO%IRMIVOL(1:number_of_active_columns) = &
+         accumulated_micro_irrigation(active_source_column(1:number_of_active_columns))
+    NoahmpIO%IRFIVOL(1:number_of_active_columns) = &
+         accumulated_flood_irrigation(active_source_column(1:number_of_active_columns))
+    NoahmpIO%IRELOSS(1:number_of_active_columns) = &
+         accumulated_sprinkler_evaporation_loss(active_source_column(1:number_of_active_columns))
+    NoahmpIO%ACC_ETRANIXY(1:vertical_dimension_of_soil,1:number_of_active_columns) = &
+         transpose(accumulated_soil_layer_transpiration( &
+              active_source_column(1:number_of_active_columns),1:vertical_dimension_of_soil))
 
-    call ResetSoilCycleAccumulators(number_of_active_columns, &
-                                    vertical_dimension_of_soil)
+    ! Preserve the existing per-soil-cycle reset semantics.
+    NoahmpIO%ACC_SSOILXY(1:number_of_active_columns) = 0.0_kind_phys
+    NoahmpIO%ACC_QINSURXY(1:number_of_active_columns) = 0.0_kind_phys
+    NoahmpIO%ACC_QSEVAXY(1:number_of_active_columns) = 0.0_kind_phys
+    NoahmpIO%ACC_ETRANIXY(1:vertical_dimension_of_soil,1:number_of_active_columns) = &
+         0.0_kind_phys
+    NoahmpIO%ACC_DWATERXY(1:number_of_active_columns) = 0.0_kind_phys
+    NoahmpIO%ACC_PRCPXY(1:number_of_active_columns) = 0.0_kind_phys
+    NoahmpIO%ACC_ECANXY(1:number_of_active_columns) = 0.0_kind_phys
+    NoahmpIO%ACC_ETRANXY(1:number_of_active_columns) = 0.0_kind_phys
+    NoahmpIO%ACC_EDIRXY(1:number_of_active_columns) = 0.0_kind_phys
+    NoahmpIO%ACC_GLAFLWXY(1:number_of_active_columns) = 0.0_kind_phys
 
-    call LoadCropState(active_source_column, number_of_active_columns)
+    NoahmpIO%PGSXY(1:number_of_active_columns) = &
+         plant_growth_stage(active_source_column(1:number_of_active_columns))
+    NoahmpIO%GRAINXY(1:number_of_active_columns) = &
+         grain_mass(active_source_column(1:number_of_active_columns))
+    NoahmpIO%GDDXY(1:number_of_active_columns) = &
+         growing_degree_day(active_source_column(1:number_of_active_columns))
     NoahmpIO%LFMASSXY(1:number_of_active_columns) = &
          leaf_mass(active_source_column(1:number_of_active_columns))
     NoahmpIO%RTMASSXY(1:number_of_active_columns) = &
@@ -2005,7 +2023,7 @@ contains
          surface_downwelling_shortwave_flux(active_source_column(1:number_of_active_columns))
     NoahmpIO%GLW(1:number_of_active_columns) = &
          surface_downwelling_longwave_flux(active_source_column(1:number_of_active_columns))
-    if (configured%opt_snow_albedo == 3) then
+    if (NoahmpIO%IOPT_ALB == 3) then
        NoahmpIO%DepBChydrophoXY(1:number_of_active_columns) = &
          snicar_hydrophobic_black_carbon_deposition_flux( &
               active_source_column(1:number_of_active_columns))
@@ -2159,8 +2177,14 @@ contains
                       upper_bound_of_vertical_dimension_of_surface_snow, &
                       1:number_of_active_columns))
 					  
-    call SaveAlbedoState(active_source_column, number_of_active_columns, &
-                         number_of_shortwave_radiation_bands)
+    direct_soil_albedo(active_source_column(1:number_of_active_columns), &
+                             1:number_of_shortwave_radiation_bands) = &
+         transpose(NoahmpIO%ALBSOILDIRXY(1:number_of_shortwave_radiation_bands, &
+                                         1:number_of_active_columns))
+    diffuse_soil_albedo(active_source_column(1:number_of_active_columns), &
+                        1:number_of_shortwave_radiation_bands) = &
+         transpose(NoahmpIO%ALBSOILDIFXY(1:number_of_shortwave_radiation_bands, &
+                                         1:number_of_active_columns))
 
     canopy_liquid_water(active_source_column(1:number_of_active_columns)) = &
          NoahmpIO%CANLIQXY(1:number_of_active_columns)
@@ -2216,10 +2240,59 @@ contains
          transpose(NoahmpIO%SH2O(1:vertical_dimension_of_soil,1:number_of_active_columns))
     soil_moisture(active_source_column(1:number_of_active_columns),1:vertical_dimension_of_soil) = &
          transpose(NoahmpIO%SMOIS(1:vertical_dimension_of_soil,1:number_of_active_columns))
-    call SaveAccumulatorState(active_source_column, number_of_active_columns, &
-                              vertical_dimension_of_soil)
+    accumulated_ground_heat_flux(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%ACC_SSOILXY(1:number_of_active_columns)
+    sprinkler_heat_accumulation(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%IRRSPLH(1:number_of_active_columns)
+    accumulated_soil_surface_evaporation(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%ACC_QSEVAXY(1:number_of_active_columns)
+    accumulated_soil_surface_inflow(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%ACC_QINSURXY(1:number_of_active_columns)
+    accumulated_surface_water_change(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%ACC_DWATERXY(1:number_of_active_columns)
+    accumulated_precipitation(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%ACC_PRCPXY(1:number_of_active_columns)
+    accumulated_canopy_evaporation(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%ACC_ECANXY(1:number_of_active_columns)
+    accumulated_transpiration(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%ACC_ETRANXY(1:number_of_active_columns)
+    accumulated_ground_evaporation(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%ACC_EDIRXY(1:number_of_active_columns)
+    accumulated_glacier_excess_flow(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%ACC_GLAFLWXY(1:number_of_active_columns)
+    accumulated_surface_runoff(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%SFCRUNOFF(1:number_of_active_columns)
+    accumulated_subsurface_runoff(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%UDRUNOFF(1:number_of_active_columns)
+    accumulated_tile_drainage(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%QTDRAIN(1:number_of_active_columns)
+    accumulated_snowfall(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%ACSNOW(1:number_of_active_columns)
+    accumulated_snowmelt(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%ACSNOM(1:number_of_active_columns)
+    accumulated_shallow_groundwater_recharge(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%RECHXY(1:number_of_active_columns)
+    accumulated_deep_groundwater_recharge(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%DEEPRECHXY(1:number_of_active_columns)
+    accumulated_sprinkler_irrigation(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%IRSIVOL(1:number_of_active_columns)
+    accumulated_micro_irrigation(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%IRMIVOL(1:number_of_active_columns)
+    accumulated_flood_irrigation(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%IRFIVOL(1:number_of_active_columns)
+    accumulated_sprinkler_evaporation_loss(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%IRELOSS(1:number_of_active_columns)
+    accumulated_soil_layer_transpiration( &
+         active_source_column(1:number_of_active_columns),1:vertical_dimension_of_soil) = &
+         transpose(NoahmpIO%ACC_ETRANIXY(1:vertical_dimension_of_soil, &
+                                          1:number_of_active_columns))
 
-    call SaveCropState(active_source_column, number_of_active_columns)
+    plant_growth_stage(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%PGSXY(1:number_of_active_columns)
+    grain_mass(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%GRAINXY(1:number_of_active_columns)
+    growing_degree_day(active_source_column(1:number_of_active_columns)) = &
+         NoahmpIO%GDDXY(1:number_of_active_columns)
 	
     leaf_mass(active_source_column(1:number_of_active_columns)) = &
          NoahmpIO%LFMASSXY(1:number_of_active_columns)
@@ -2337,309 +2410,40 @@ contains
             NoahmpIO%ALBSFCDIFXY(2,1:number_of_active_columns)
     end where
 
+    end associate
 
   end subroutine noahmp_run
 
-  subroutine InitializeAccumulatorState(number_of_columns, number_of_soil_layers)
-
-    integer, intent(in) :: number_of_columns
-    integer, intent(in) :: number_of_soil_layers
-
-    if (allocated(accumulator_state)) deallocate(accumulator_state)
-    allocate(accumulator_state)
-    allocate(accumulator_state%ACC_SSOILXY(number_of_columns))
-    allocate(accumulator_state%IRRSPLH(number_of_columns))
-    allocate(accumulator_state%ACC_QSEVAXY(number_of_columns))
-    allocate(accumulator_state%ACC_QINSURXY(number_of_columns))
-    allocate(accumulator_state%ACC_DWATERXY(number_of_columns))
-    allocate(accumulator_state%ACC_PRCPXY(number_of_columns))
-    allocate(accumulator_state%ACC_ECANXY(number_of_columns))
-    allocate(accumulator_state%ACC_ETRANXY(number_of_columns))
-    allocate(accumulator_state%ACC_EDIRXY(number_of_columns))
-    allocate(accumulator_state%ACC_ETRANIXY(number_of_soil_layers, number_of_columns))
-    allocate(accumulator_state%ACC_GLAFLWXY(number_of_columns))
-    allocate(accumulator_state%SFCRUNOFF(number_of_columns))
-    allocate(accumulator_state%UDRUNOFF(number_of_columns))
-    allocate(accumulator_state%QTDRAIN(number_of_columns))
-    allocate(accumulator_state%ACSNOW(number_of_columns))
-    allocate(accumulator_state%ACSNOM(number_of_columns))
-    allocate(accumulator_state%RECHXY(number_of_columns))
-    allocate(accumulator_state%DEEPRECHXY(number_of_columns))
-    allocate(accumulator_state%IRSIVOL(number_of_columns))
-    allocate(accumulator_state%IRMIVOL(number_of_columns))
-    allocate(accumulator_state%IRFIVOL(number_of_columns))
-    allocate(accumulator_state%IRELOSS(number_of_columns))
-
-    accumulator_state%ACC_SSOILXY = 0.0_kind_phys
-    accumulator_state%IRRSPLH = 0.0_kind_phys
-    accumulator_state%ACC_QSEVAXY = 0.0_kind_phys
-    accumulator_state%ACC_QINSURXY = 0.0_kind_phys
-    accumulator_state%ACC_DWATERXY = 0.0_kind_phys
-    accumulator_state%ACC_PRCPXY = 0.0_kind_phys
-    accumulator_state%ACC_ECANXY = 0.0_kind_phys
-    accumulator_state%ACC_ETRANXY = 0.0_kind_phys
-    accumulator_state%ACC_EDIRXY = 0.0_kind_phys
-    accumulator_state%ACC_ETRANIXY = 0.0_kind_phys
-    accumulator_state%ACC_GLAFLWXY = 0.0_kind_phys
-    accumulator_state%SFCRUNOFF = 0.0_kind_phys
-    accumulator_state%UDRUNOFF = 0.0_kind_phys
-    accumulator_state%QTDRAIN = 0.0_kind_phys
-    accumulator_state%ACSNOW = 0.0_kind_phys
-    accumulator_state%ACSNOM = 0.0_kind_phys
-    accumulator_state%RECHXY = 0.0_kind_phys
-    accumulator_state%DEEPRECHXY = 0.0_kind_phys
-    accumulator_state%IRSIVOL = 0.0_kind_phys
-    accumulator_state%IRMIVOL = 0.0_kind_phys
-    accumulator_state%IRFIVOL = 0.0_kind_phys
-    accumulator_state%IRELOSS = 0.0_kind_phys
-
-  end subroutine InitializeAccumulatorState
-
-
-  subroutine LoadAccumulatorState(active_source_column, number_of_active_columns, &
-                                  number_of_soil_layers)
-
-    integer, intent(in) :: active_source_column(:)
-    integer, intent(in) :: number_of_active_columns
-    integer, intent(in) :: number_of_soil_layers
-
-    NoahmpIO%ACC_SSOILXY(1:number_of_active_columns) = &
-         accumulator_state%ACC_SSOILXY(active_source_column(1:number_of_active_columns))
-    NoahmpIO%IRRSPLH(1:number_of_active_columns) = &
-         accumulator_state%IRRSPLH(active_source_column(1:number_of_active_columns))
-    NoahmpIO%ACC_QSEVAXY(1:number_of_active_columns) = &
-         accumulator_state%ACC_QSEVAXY(active_source_column(1:number_of_active_columns))
-    NoahmpIO%ACC_QINSURXY(1:number_of_active_columns) = &
-         accumulator_state%ACC_QINSURXY(active_source_column(1:number_of_active_columns))
-    NoahmpIO%ACC_DWATERXY(1:number_of_active_columns) = &
-         accumulator_state%ACC_DWATERXY(active_source_column(1:number_of_active_columns))
-    NoahmpIO%ACC_PRCPXY(1:number_of_active_columns) = &
-         accumulator_state%ACC_PRCPXY(active_source_column(1:number_of_active_columns))
-    NoahmpIO%ACC_ECANXY(1:number_of_active_columns) = &
-         accumulator_state%ACC_ECANXY(active_source_column(1:number_of_active_columns))
-    NoahmpIO%ACC_ETRANXY(1:number_of_active_columns) = &
-         accumulator_state%ACC_ETRANXY(active_source_column(1:number_of_active_columns))
-    NoahmpIO%ACC_EDIRXY(1:number_of_active_columns) = &
-         accumulator_state%ACC_EDIRXY(active_source_column(1:number_of_active_columns))
-    NoahmpIO%ACC_ETRANIXY(1:number_of_soil_layers,1:number_of_active_columns) = &
-         accumulator_state%ACC_ETRANIXY(1:number_of_soil_layers, &
-              active_source_column(1:number_of_active_columns))
-    NoahmpIO%ACC_GLAFLWXY(1:number_of_active_columns) = &
-         accumulator_state%ACC_GLAFLWXY(active_source_column(1:number_of_active_columns))
-    NoahmpIO%SFCRUNOFF(1:number_of_active_columns) = &
-         accumulator_state%SFCRUNOFF(active_source_column(1:number_of_active_columns))
-    NoahmpIO%UDRUNOFF(1:number_of_active_columns) = &
-         accumulator_state%UDRUNOFF(active_source_column(1:number_of_active_columns))
-    NoahmpIO%QTDRAIN(1:number_of_active_columns) = &
-         accumulator_state%QTDRAIN(active_source_column(1:number_of_active_columns))
-    NoahmpIO%ACSNOW(1:number_of_active_columns) = &
-         accumulator_state%ACSNOW(active_source_column(1:number_of_active_columns))
-    NoahmpIO%ACSNOM(1:number_of_active_columns) = &
-         accumulator_state%ACSNOM(active_source_column(1:number_of_active_columns))
-    NoahmpIO%RECHXY(1:number_of_active_columns) = &
-         accumulator_state%RECHXY(active_source_column(1:number_of_active_columns))
-    NoahmpIO%DEEPRECHXY(1:number_of_active_columns) = &
-         accumulator_state%DEEPRECHXY(active_source_column(1:number_of_active_columns))
-    NoahmpIO%IRSIVOL(1:number_of_active_columns) = &
-         accumulator_state%IRSIVOL(active_source_column(1:number_of_active_columns))
-    NoahmpIO%IRMIVOL(1:number_of_active_columns) = &
-         accumulator_state%IRMIVOL(active_source_column(1:number_of_active_columns))
-    NoahmpIO%IRFIVOL(1:number_of_active_columns) = &
-         accumulator_state%IRFIVOL(active_source_column(1:number_of_active_columns))
-    NoahmpIO%IRELOSS(1:number_of_active_columns) = &
-         accumulator_state%IRELOSS(active_source_column(1:number_of_active_columns))
-
-  end subroutine LoadAccumulatorState
-
-
-  subroutine ResetSoilCycleAccumulators(number_of_active_columns, &
-                                        number_of_soil_layers)
-
-    integer, intent(in) :: number_of_active_columns
-    integer, intent(in) :: number_of_soil_layers
-
-    NoahmpIO%ACC_SSOILXY(1:number_of_active_columns) = 0.0_kind_phys
-    NoahmpIO%ACC_QINSURXY(1:number_of_active_columns) = 0.0_kind_phys
-    NoahmpIO%ACC_QSEVAXY(1:number_of_active_columns) = 0.0_kind_phys
-    NoahmpIO%ACC_ETRANIXY(1:number_of_soil_layers,1:number_of_active_columns) = &
-         0.0_kind_phys
-    NoahmpIO%ACC_DWATERXY(1:number_of_active_columns) = 0.0_kind_phys
-    NoahmpIO%ACC_PRCPXY(1:number_of_active_columns) = 0.0_kind_phys
-    NoahmpIO%ACC_ECANXY(1:number_of_active_columns) = 0.0_kind_phys
-    NoahmpIO%ACC_ETRANXY(1:number_of_active_columns) = 0.0_kind_phys
-    NoahmpIO%ACC_EDIRXY(1:number_of_active_columns) = 0.0_kind_phys
-    NoahmpIO%ACC_GLAFLWXY(1:number_of_active_columns) = 0.0_kind_phys
-
-  end subroutine ResetSoilCycleAccumulators
-
-
-  subroutine SaveAccumulatorState(active_source_column, number_of_active_columns, &
-                                  number_of_soil_layers)
-
-    integer, intent(in) :: active_source_column(:)
-    integer, intent(in) :: number_of_active_columns
-    integer, intent(in) :: number_of_soil_layers
-
-    accumulator_state%ACC_SSOILXY(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%ACC_SSOILXY(1:number_of_active_columns)
-    accumulator_state%IRRSPLH(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%IRRSPLH(1:number_of_active_columns)
-    accumulator_state%ACC_QSEVAXY(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%ACC_QSEVAXY(1:number_of_active_columns)
-    accumulator_state%ACC_QINSURXY(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%ACC_QINSURXY(1:number_of_active_columns)
-    accumulator_state%ACC_DWATERXY(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%ACC_DWATERXY(1:number_of_active_columns)
-    accumulator_state%ACC_PRCPXY(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%ACC_PRCPXY(1:number_of_active_columns)
-    accumulator_state%ACC_ECANXY(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%ACC_ECANXY(1:number_of_active_columns)
-    accumulator_state%ACC_ETRANXY(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%ACC_ETRANXY(1:number_of_active_columns)
-    accumulator_state%ACC_EDIRXY(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%ACC_EDIRXY(1:number_of_active_columns)
-    accumulator_state%ACC_ETRANIXY(1:number_of_soil_layers, &
-         active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%ACC_ETRANIXY(1:number_of_soil_layers,1:number_of_active_columns)
-    accumulator_state%ACC_GLAFLWXY(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%ACC_GLAFLWXY(1:number_of_active_columns)
-    accumulator_state%SFCRUNOFF(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%SFCRUNOFF(1:number_of_active_columns)
-    accumulator_state%UDRUNOFF(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%UDRUNOFF(1:number_of_active_columns)
-    accumulator_state%QTDRAIN(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%QTDRAIN(1:number_of_active_columns)
-    accumulator_state%ACSNOW(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%ACSNOW(1:number_of_active_columns)
-    accumulator_state%ACSNOM(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%ACSNOM(1:number_of_active_columns)
-    accumulator_state%RECHXY(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%RECHXY(1:number_of_active_columns)
-    accumulator_state%DEEPRECHXY(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%DEEPRECHXY(1:number_of_active_columns)
-    accumulator_state%IRSIVOL(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%IRSIVOL(1:number_of_active_columns)
-    accumulator_state%IRMIVOL(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%IRMIVOL(1:number_of_active_columns)
-    accumulator_state%IRFIVOL(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%IRFIVOL(1:number_of_active_columns)
-    accumulator_state%IRELOSS(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%IRELOSS(1:number_of_active_columns)
-
-  end subroutine SaveAccumulatorState
-
-
-  subroutine InitializeAlbedoState(number_of_columns, number_of_bands)
-
-    integer, intent(in) :: number_of_columns
-    integer, intent(in) :: number_of_bands
-
-    if (allocated(albedo_state)) deallocate(albedo_state)
-    allocate(albedo_state)
-    allocate(albedo_state%soil_direct(number_of_bands, number_of_columns))
-    allocate(albedo_state%soil_diffuse(number_of_bands, number_of_columns))
-    albedo_state%soil_direct = 0.0_kind_phys
-    albedo_state%soil_diffuse = 0.0_kind_phys
-
-  end subroutine InitializeAlbedoState
-
-
-  subroutine LoadAlbedoState(active_source_column, number_of_active_columns, &
-                             number_of_bands)
-
-    integer, intent(in) :: active_source_column(:)
-    integer, intent(in) :: number_of_active_columns
-    integer, intent(in) :: number_of_bands
-
-    NoahmpIO%ALBSOILDIRXY(1:number_of_bands,1:number_of_active_columns) = &
-         albedo_state%soil_direct(1:number_of_bands, &
-              active_source_column(1:number_of_active_columns))
-    NoahmpIO%ALBSOILDIFXY(1:number_of_bands,1:number_of_active_columns) = &
-         albedo_state%soil_diffuse(1:number_of_bands, &
-              active_source_column(1:number_of_active_columns))
-
-  end subroutine LoadAlbedoState
-
-
-  subroutine SaveAlbedoState(active_source_column, number_of_active_columns, &
-                             number_of_bands)
-
-    integer, intent(in) :: active_source_column(:)
-    integer, intent(in) :: number_of_active_columns
-    integer, intent(in) :: number_of_bands
-
-    albedo_state%soil_direct(1:number_of_bands, &
-         active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%ALBSOILDIRXY(1:number_of_bands,1:number_of_active_columns)
-    albedo_state%soil_diffuse(1:number_of_bands, &
-         active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%ALBSOILDIFXY(1:number_of_bands,1:number_of_active_columns)
-
-  end subroutine SaveAlbedoState
-
-
-  subroutine InitializeCropState(number_of_columns)
-
-    integer, intent(in) :: number_of_columns
-
-    if (allocated(crop_state)) deallocate(crop_state)
-    allocate(crop_state)
-    allocate(crop_state%plant_growth_stage(number_of_columns))
-    allocate(crop_state%grain_mass(number_of_columns))
-    allocate(crop_state%growing_degree_day(number_of_columns))
-    crop_state%plant_growth_stage = 1
-    crop_state%grain_mass = 1.0e-10_kind_phys
-    crop_state%growing_degree_day = 0.0_kind_phys
-
-  end subroutine InitializeCropState
-
-
-  subroutine LoadCropState(active_source_column, number_of_active_columns)
-
-    integer, intent(in) :: active_source_column(:)
-    integer, intent(in) :: number_of_active_columns
-
-    NoahmpIO%PGSXY(1:number_of_active_columns) = &
-         crop_state%plant_growth_stage(active_source_column(1:number_of_active_columns))
-    NoahmpIO%GRAINXY(1:number_of_active_columns) = &
-         crop_state%grain_mass(active_source_column(1:number_of_active_columns))
-    NoahmpIO%GDDXY(1:number_of_active_columns) = &
-         crop_state%growing_degree_day(active_source_column(1:number_of_active_columns))
-
-  end subroutine LoadCropState
-
-  subroutine SaveCropState(active_source_column, number_of_active_columns)
-
-    integer, intent(in) :: active_source_column(:)
-    integer, intent(in) :: number_of_active_columns
-
-    crop_state%plant_growth_stage(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%PGSXY(1:number_of_active_columns)
-    crop_state%grain_mass(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%GRAINXY(1:number_of_active_columns)
-    crop_state%growing_degree_day(active_source_column(1:number_of_active_columns)) = &
-         NoahmpIO%GDDXY(1:number_of_active_columns)
-
-  end subroutine SaveCropState
 
   !> \section arg_table_noahmp_final Argument Table
   !! \htmlinclude noahmp_final.html
   !!
-  subroutine noahmp_final(errmsg, errflg)
+  subroutine noahmp_final(instance_number, errmsg, errflg)
 
+    integer, intent(in)           :: instance_number
     character(len=*), intent(out) :: errmsg
     integer, intent(out)          :: errflg
+
+    integer :: context_index
 
     errmsg = ''
     errflg = 0
 
-    if (.not. is_initialized) return
+    if (.not. allocated(NoahmpContexts)) return
+    if (instance_number < 1 .or. instance_number > size(NoahmpContexts)) then
+       errflg = 1
+       errmsg = 'noahmp_final: instance_number is outside the allocated context range'
+       return
+    end if
 
-    if (allocated(accumulator_state)) deallocate(accumulator_state)
-    if (allocated(albedo_state)) deallocate(albedo_state)
-    if (allocated(crop_state)) deallocate(crop_state)
-    if (allocated(NoahmpIO)) deallocate(NoahmpIO)
-    is_initialized = .false.
+    if (allocated(NoahmpContexts(instance_number)%io)) then
+       deallocate(NoahmpContexts(instance_number)%io)
+    end if
+
+    do context_index = 1, size(NoahmpContexts)
+       if (allocated(NoahmpContexts(context_index)%io)) return
+    end do
+    deallocate(NoahmpContexts)
 
   end subroutine noahmp_final
 
